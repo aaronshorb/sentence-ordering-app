@@ -1,35 +1,38 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
 <head>
     <title>Sentence Ordering App</title>
 </head>
 <body>
 <h1>Sentence Ordering App</h1>
 
-<p>
+<p sec:authorize="!isAuthenticated()">
     <a href="/login">
         <button type="button">Login</button>
     </a>
 </p>
 
-<form th:action="@{/logout}" method="post">
+<form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post">
     <button type="submit">Logout</button>
 </form>
 
+<div sec:authorize="hasRole('STUDENT')">
+    <h2>Student</h2>
+    <p>
+        <a href="/student/exercises">
+            <button type="button">Student Exercises</button>
+        </a>
+    </p>
+</div>
 
-<h2>Student</h2>
-<p>
-    <a href="/student/exercises">
-        <button type="button">Student Exercises</button>
-    </a>
-</p>
-
-<h2>Admin</h2>
-<ul>
-    <li><a href="/admin/grades/1/exercises">Manage Grade 1</a></li>
-    <li><a href="/admin/grades/2/exercises">Manage Grade 2</a></li>
-    <li><a href="/admin/grades/3/exercises">Manage Grade 3</a></li>
-</ul>
+<div sec:authorize="hasRole('ADMIN')">
+    <h2>Admin</h2>
+    <ul>
+        <li><a href="/admin/grades/1/exercises">Manage Grade 1</a></li>
+        <li><a href="/admin/grades/2/exercises">Manage Grade 2</a></li>
+        <li><a href="/admin/grades/3/exercises">Manage Grade 3</a></li>
+    </ul>
+</div>
 
 </body>
 </html>
