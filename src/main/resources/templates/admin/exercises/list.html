@@ -46,17 +46,25 @@
     </tbody>
 </table>
 
-<p>
-    <a th:href="@{/admin/grades/{grade}/exercises/new(grade=${grade})}">
+<form th:action="@{/admin/grades/{grade}/exercises/new(grade=${grade})}">
+    <button type="submit">
         Add Exercise
-    </a>
-</p>
+    </button>
+</form>
 
-<p>
-    <a th:href="@{/admin/grades/{grade}/progress(grade=${grade})}">
+<form th:action="@{/admin/grades/{grade}/progress(grade=${grade})}">
+    <button type="submit">
         View Student Progress
-    </a>
-</p>
+    </button>
+</form>
+
+<form th:action="@{/admin/grades/{grade}/progress/reset(grade=${grade})}" method="post">
+    <button type="submit"
+            onclick="return confirm('Reset all student progress for this grade?')">
+        Reset Student Progress
+    </button>
+</form>
+
 
 </body>
 </html>

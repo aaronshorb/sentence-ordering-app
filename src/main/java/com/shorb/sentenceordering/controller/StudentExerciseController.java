@@ -7,6 +7,7 @@ import com.shorb.sentenceordering.repository.AppUserRepository;
 import com.shorb.sentenceordering.repository.ExerciseRepository;
 import com.shorb.sentenceordering.repository.StudentExerciseCompletionRepository;
 import com.shorb.sentenceordering.service.ExercisePlayService;
+import com.shorb.sentenceordering.service.StudentProgressService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,29 +26,46 @@ public class StudentExerciseController {
     private final AppUserRepository appUserRepository;
     private final ExercisePlayService exercisePlayService;
     private final StudentExerciseCompletionRepository completionRepository;
+    private final StudentProgressService studentProgressService;
 
     public StudentExerciseController(
             ExerciseRepository exerciseRepository,
             AppUserRepository appUserRepository,
             ExercisePlayService exercisePlayService,
-            StudentExerciseCompletionRepository completionRepository
+            StudentExerciseCompletionRepository completionRepository,
+            StudentProgressService studentProgressService
     ) {
         this.exerciseRepository = exerciseRepository;
         this.appUserRepository = appUserRepository;
         this.exercisePlayService = exercisePlayService;
         this.completionRepository = completionRepository;
+        this.studentProgressService = studentProgressService;
     }
 
     @GetMapping("/student/exercises")
-    public String listExercises(Authentication authentication, Model model) {
+    public String listUnits(Authentication authentication, Model model) {
         AppUser user = getCurrentUser(authentication);
 
-        List<Exercise> exercises = exerciseRepository.findByGradeOrderByUnitNumberAscReadingNumberAsc(user.getGrade());
+        model.addAttribute("units", exerciseRepository.findDistinctUnitNumbersByGrade(user.getGrade()));
+
+        return "student/unit-list";
+    }
+
+    @GetMapping("/student/exercises/units/{unitNumber}")
+    public String listExercisesByUnit(
+            @PathVariable int unitNumber,
+            Authentication authentication,
+            Model model
+    ) {
+        AppUser user = getCurrentUser(authentication);
+
+        List<Exercise> exercises = exerciseRepository.findByGradeAndUnitNumberOrderByReadingNumberAsc(user.getGrade(), unitNumber);
         List<Long> completedExerciseIds = completionRepository.findByStudent(user)
                 .stream()
                 .map(completion -> completion.getExercise().getId())
                 .toList();
 
+        model.addAttribute("unitNumber", unitNumber);
         model.addAttribute("exercises", exercises);
         model.addAttribute("completedExerciseIds", completedExerciseIds);
 
@@ -65,7 +83,7 @@ public class StudentExerciseController {
 
         model.addAttribute("exercise", exercise);
         model.addAttribute("shuffledSentences", exercisePlayService.shuffledSentences(exercise));
-        model.addAttribute("backUrl", "/student/exercises");
+        model.addAttribute("backUrl", "/student/exercises/units/" + exercise.getUnitNumber());
         model.addAttribute("playAction", "/student/exercises/" + id + "/play");
 
         return "exercises/play";
@@ -101,10 +119,19 @@ public class StudentExerciseController {
         model.addAttribute("shuffledSentences", result.displayedSentences());
         model.addAttribute("displayedOrders", result.displayedOrders());
         model.addAttribute("resultMessage", result.correct() ? "Right!" : "Wrong. Try again.");
-        model.addAttribute("backUrl", "/student/exercises");
+        model.addAttribute("backUrl", "/student/exercises/units/" + exercise.getUnitNumber());
         model.addAttribute("playAction", "/student/exercises/" + id + "/play");
 
         return "exercises/play";
+    }
+
+    @PostMapping("/student/exercises/units/{unitNumber}/progress/reset")
+    public String resetStudentProgress(@PathVariable int unitNumber, Authentication authentication) {
+        AppUser student = getCurrentUser(authentication);
+
+        studentProgressService.resetStudentCompletions(student, unitNumber);
+
+        return "redirect:/student/exercises/units/" + unitNumber;
     }
 
     private AppUser getCurrentUser(Authentication authentication) {

@@ -5,6 +5,7 @@ import com.shorb.sentenceordering.model.Exercise;
 import com.shorb.sentenceordering.repository.AppUserRepository;
 import com.shorb.sentenceordering.repository.ExerciseRepository;
 import com.shorb.sentenceordering.repository.StudentExerciseCompletionRepository;
+import com.shorb.sentenceordering.service.StudentProgressService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,15 +18,18 @@ public class AdminStudentProgressController {
     private final  ExerciseRepository exerciseRepository;
     private final AppUserRepository appUserRepository;
     private final StudentExerciseCompletionRepository studentExerciseCompletionRepository;
+    private final StudentProgressService studentProgressService;
 
     public AdminStudentProgressController(
             ExerciseRepository exerciseRepository,
             AppUserRepository appUserRepository,
-            StudentExerciseCompletionRepository studentExerciseCompletionRepository
+            StudentExerciseCompletionRepository studentExerciseCompletionRepository,
+            StudentProgressService studentProgressService
     ) {
         this.exerciseRepository = exerciseRepository;
         this.appUserRepository = appUserRepository;
         this.studentExerciseCompletionRepository = studentExerciseCompletionRepository;
+        this.studentProgressService = studentProgressService;
     }
 
     @GetMapping("/admin/grades/{grade}/progress")
@@ -60,8 +64,10 @@ public class AdminStudentProgressController {
         return "admin/students/unit-progress";
     }
 
+    @PostMapping("/admin/grades/{grade}/progress/reset")
+    public String resetGradeProgress(@PathVariable int grade){
+        studentProgressService.resetGradeCompletions(grade);
 
-
-
-
+        return "redirect:/admin/grades/" + grade + "/exercises";
+    }
 }

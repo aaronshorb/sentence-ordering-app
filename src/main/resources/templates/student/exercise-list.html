@@ -37,5 +37,18 @@
     </tbody>
 </table>
 
+<p>
+    <a href="/student/exercises">
+        Back to units
+    </a>
+</p>
+
+<form th:action="@{/student/exercises/units/{unitNumber}/progress/reset(unitNumber=${unitNumber})}" method="post">
+    <button type="submit"
+            onclick="return confirm('Reset your progress for this unit?')">
+        Reset Unit Progress
+    </button>
+</form>
+
 </body>
 </html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Exercises</title>
+</head>
+<body>
+
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Logout</button>
+</form>
+
+<h1>Exercises</h1>
+
+<a href="/">Home</a>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>Unit</th>
+        <th>Readings</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="unit : ${units}">
+        <td th:text="${unit}">1</td>
+        <td>
+            <a th:href="@{/student/exercises/units/{unitNumber}(unitNumber=${unit})}">
+                Open
+            </a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
