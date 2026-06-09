@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Exercise</title>
+</head>
+<body>
+<h1>Edit Exercise</h1>
+
+<form th:action="@{/admin/exercises/{id}/edit(id=${exerciseForm.id})}" th:object="${exerciseForm}" method="post">
+    <div>
+        <label>Grade:</label>
+        <select th:field="*{grade}">
+            <option value="1">1st Grade</option>
+            <option value="2">2nd Grade</option>
+            <option value="3">3rd Grade</option>
+        </select>
+    </div>
+
+    <div>
+        <label>Unit:</label>
+        <input type="number" th:field="*{unitNumber}" min="1" max="20">
+    </div>
+
+    <div>
+        <label>Reading:</label>
+        <input type="number" th:field="*{readingNumber}" min="1" max="30">
+    </div>
+
+    <div>
+        <label>Title:</label>
+        <input type="text" th:field="*{title}">
+    </div>
+
+    <div>
+        <label>Text:</label>
+        <p>Enter one sentence per line. The line order is the correct order.</p>
+        <textarea th:field="*{readingText}" rows="12" cols="80"></textarea>
+    </div>
+
+    <div>
+        <label>Audio Link:</label>
+        <input type="text" th:field="*{audioLink}">
+    </div>
+
+    <button type="submit">Save Changes</button>
+</form>
+
+<p>
+    <a th:href="@{/admin/grades/{grade}/exercises(grade=${grade})}">
+        Back to exercises
+    </a>
+</p>
+</body>
+</html>

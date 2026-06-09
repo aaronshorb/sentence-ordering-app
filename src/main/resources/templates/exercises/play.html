@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Play Exercise</title>
+</head>
+<body>
+
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Logout</button>
+</form>
+
+<h1>
+    Unit: <span th:text="${exercise.unitNumber}">1</span>
+    Reading: <span th:text="${exercise.readingNumber}">1</span>
+</h1>
+
+<h2 th:text="${exercise.title}">Exercise Title</h2>
+
+<h2 th:if="${resultMessage}" th:text="${resultMessage}">Result</h2>
+
+<p>
+    <a th:href="${backUrl != null ? backUrl : '/student/exercises'}">
+        Back to exercises
+    </a>
+</p>
+<figure th:if="${exercise.audioLink != null and !exercise.audioLink.isBlank()}">
+    <audio controls>
+        <source th:src="${exercise.audioLink}" type="audio/mpeg">
+        Audio element not supported.
+    </audio>
+</figure>
+
+<section>
+    <h2>Put the sentences in order</h2>
+    <p>Enter the correct order number for each sentence.</p>
+</section>
+
+<form th:action="${playAction}" method="post">
+    <div th:each="sentence, stat : ${shuffledSentences}">
+        <input type="hidden" name="sentenceIds" th:value="${sentence.id}">
+
+        <span th:text="${sentence.text}">Sentence text</span>
+
+        <label>
+            <select name="orders" required>
+                <option
+                    th:each="i : ${#numbers.sequence(1, #lists.size(shuffledSentences))}"
+                    th:value="${i}"
+                    th:text="${i}"
+                    th:selected="${displayedOrders != null ? displayedOrders[stat.index] == i : i == stat.count}">
+                    1
+                </option>
+            </select>
+        </label>
+    </div>
+
+    <button type="submit">Check Answer</button>
+</form>
+
+</body>
+</html>

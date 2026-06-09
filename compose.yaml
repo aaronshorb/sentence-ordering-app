@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: sentence-postgres
+    environment:
+      POSTGRES_DB: sentence_app
+      POSTGRES_USER: sentence_user
+      POSTGRES_PASSWORD: sentence_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - sentence-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  sentence-postgres-data:

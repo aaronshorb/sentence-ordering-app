@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>New Exercise</title>
+</head>
+<body>
+<h1>New Exercise</h1>
+
+<form th:action="@{/admin/grades/{grade}/exercises(grade=${grade})}" th:object="${exerciseForm}" method="post">
+    <p>
+        Grade: <span th:text="${grade}">1</span>
+    </p>
+
+    <input type="hidden" th:field="*{grade}">
+
+    <div>
+        <label>Unit:</label>
+        <input type="number" th:field="*{unitNumber}" min="1" max="20">
+    </div>
+
+    <div>
+        <label>Reading:</label>
+        <input type="number" th:field="*{readingNumber}" min="1" max="25">
+    </div>
+
+    <div>
+        <label>Title:</label>
+        <input type="text" th:field="*{title}">
+    </div>
+
+    <div>
+        <label>Text:</label>
+        <p>Enter one sentence per line. Order from top to bottom. Separate sentences using the enter key.</p>
+        <textarea th:field="*{readingText}" rows="12" cols="80"></textarea>
+    </div>
+
+    <div>
+    <label>Audio Link:</label>
+        <input type="text" th:field="*{audioLink}">
+    </div>
+
+    <button type="submit">Save</button>
+</form>
+<p>
+    <a th:href="@{/admin/grades/{grade}/exercises(grade=${grade})}">
+        Back to exercises
+    </a>
+</p>
+</body>
+</html>

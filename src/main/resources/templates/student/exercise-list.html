@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Exercises</title>
+</head>
+<body>
+
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Logout</button>
+</form>
+
+<h1>Exercises</h1>
+
+<a href="/">Home</a>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>Unit</th>
+        <th>Reading</th>
+        <th>Title</th>
+        <th>Actions</th>
+        <th>Status</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="exercise : ${exercises}">
+        <td th:text="${exercise.unitNumber}">1</td>
+        <td th:text="${exercise.readingNumber}">1</td>
+        <td th:text="${exercise.title}"></td>
+        <td>
+            <a th:href="@{/student/exercises/{id}/play(id=${exercise.id})}">Play</a>
+        </td>
+        <td th:text="${completedExerciseIds.contains(exercise.id) ? 'Completed' : ''}"></td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

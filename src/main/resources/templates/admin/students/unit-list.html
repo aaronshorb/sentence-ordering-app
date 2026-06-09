@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Progress by Unit</title>
+</head>
+<body>
+
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Logout</button>
+</form>
+
+<h1>Units</h1>
+
+<a href="/">Home</a>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>Unit</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="unit : ${units}">
+        <td th:text="${unit}">1</td>
+        <td>
+            <a th:href="@{/admin/grades/{grade}/progress/units/{unitNumber}(grade=${grade}, unitNumber=${unit})}">
+                View Progress
+            </a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<p>
+    <a th:href="@{/admin/grades/{grade}/exercises(grade=${grade})}">
+        Back to admin panel
+    </a>
+</p>
+
+</body>
+</html>

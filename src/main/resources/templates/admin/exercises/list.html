@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Exercises</title>
+</head>
+<body>
+
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Logout</button>
+</form>
+
+<h1>Exercises</h1>
+
+<a href="/">Home</a>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Grade</th>
+        <th>Unit</th>
+        <th>Reading</th>
+        <th>Title</th>
+        <th>Sentences</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="exercise : ${exercises}">
+        <td th:text="${exercise.id}">1</td>
+        <td th:text="${exercise.grade}">1</td>
+        <td th:text="${exercise.unitNumber}">1</td>
+        <td th:text="${exercise.readingNumber}">1</td>
+        <td th:text="${exercise.title}"></td>
+        <td th:text="${#lists.size(exercise.sentences)}">5</td>
+        <td>
+            <a th:href="@{/admin/exercises/{id}/play(id=${exercise.id})}"><button type="submit">Preview</button></a>
+            <a th:href="@{/admin/exercises/{id}/edit(id=${exercise.id})}"><button type="submit">Edit</button></a>
+
+            <form th:action="@{/admin/exercises/{id}/delete(id=${exercise.id})}" method="post">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<p>
+    <a th:href="@{/admin/grades/{grade}/exercises/new(grade=${grade})}">
+        Add Exercise
+    </a>
+</p>
+
+<p>
+    <a th:href="@{/admin/grades/{grade}/progress(grade=${grade})}">
+        View Student Progress
+    </a>
+</p>
+
+</body>
+</html>

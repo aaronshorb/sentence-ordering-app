@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Progress</title>
+</head>
+<body>
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Logout</button>
+</form>
+
+<h1>Students</h1>
+
+<a href="/">Home</a>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>Student</th>
+        <th th:each="exercise : ${exercises}"
+            th:text="'Reading ' + ${exercise.readingNumber}">
+            Reading
+        </th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="student : ${students}">
+        <td th:text="${student.username}">Student</td>
+        <td th:each="exercise : ${exercises}"
+            th:text="${completedKeys.contains(student.id + '-' + exercise.id) ? 'Completed' : ''}">
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<p>
+    <a th:href="@{/admin/grades/{grade}/progress(grade=${grade})}">
+        Back to units
+    </a>
+</p>
+
+</body>
+</html>
