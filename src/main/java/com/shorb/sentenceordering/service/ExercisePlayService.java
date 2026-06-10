@@ -49,7 +49,7 @@ public class ExercisePlayService {
             }
         }
         if (correct) {
-            return new ExerciseAnswerResult(true, exercise.getSentences(), null);
+            return new ExerciseAnswerResult(true, exercise.getSentences(), List.of());
         }
 
         return new ExerciseAnswerResult(false, displayedSentences, displayedOrders);
