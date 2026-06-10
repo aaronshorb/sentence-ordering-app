@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <title>Sentence Ordering App</title>
 </head>
 <body>
 <h1>Sentence Ordering App</h1>
 
-<p sec:authorize="!isAuthenticated()">
-    <a href="/login">
-        <button type="button">Login</button>
-    </a>
-</p>
+<form sec:authorize="!isAuthenticated()" action="/login" method="get">
+    <button type="submit">Login</button>
+</form>
 
 <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post">
     <button type="submit">Logout</button>
@@ -18,11 +18,9 @@
 
 <div sec:authorize="hasRole('STUDENT')">
     <h2>Student</h2>
-    <p>
-        <a href="/student/exercises">
-            <button type="button">Student Exercises</button>
-        </a>
-    </p>
+    <form action="/student/exercises" method="get">
+        <button type="submit">Student Exercises</button>
+    </form>
 </div>
 
 <div sec:authorize="hasRole('ADMIN')">

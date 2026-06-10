@@ -2,7 +2,6 @@ package com.shorb.sentenceordering.controller;
 
 import com.shorb.sentenceordering.model.AppUser;
 import com.shorb.sentenceordering.model.Exercise;
-import com.shorb.sentenceordering.model.StudentExerciseCompletion;
 import com.shorb.sentenceordering.repository.AppUserRepository;
 import com.shorb.sentenceordering.repository.ExerciseRepository;
 import com.shorb.sentenceordering.repository.StudentExerciseCompletionRepository;
@@ -44,11 +43,11 @@ public class StudentExerciseController {
 
     @GetMapping("/student/exercises")
     public String listUnits(Authentication authentication, Model model) {
-        AppUser user = getCurrentUser(authentication);
+        AppUser student = getCurrentUser(authentication);
 
-        model.addAttribute("units", exerciseRepository.findDistinctUnitNumbersByGrade(user.getGrade()));
+        model.addAttribute("units", exerciseRepository.findDistinctUnitNumbersByGrade(student.getGrade()));
 
-        return "student/unit-list";
+        return "student/units";
     }
 
     @GetMapping("/student/exercises/units/{unitNumber}")
@@ -57,19 +56,16 @@ public class StudentExerciseController {
             Authentication authentication,
             Model model
     ) {
-        AppUser user = getCurrentUser(authentication);
+        AppUser student = getCurrentUser(authentication);
 
-        List<Exercise> exercises = exerciseRepository.findByGradeAndUnitNumberOrderByReadingNumberAsc(user.getGrade(), unitNumber);
-        List<Long> completedExerciseIds = completionRepository.findByStudent(user)
-                .stream()
-                .map(completion -> completion.getExercise().getId())
-                .toList();
+        List<Exercise> exercises = exerciseRepository.findByGradeAndUnitNumberOrderByReadingNumberAsc(student.getGrade(), unitNumber);
+        List<Long> completedExerciseIds = studentProgressService.getCompletedExerciseIdsByStudent(student);
 
         model.addAttribute("unitNumber", unitNumber);
         model.addAttribute("exercises", exercises);
         model.addAttribute("completedExerciseIds", completedExerciseIds);
 
-        return "student/exercise-list";
+        return "student/unit-readings";
     }
 
     @GetMapping("/student/exercises/{id}/play")
@@ -77,9 +73,9 @@ public class StudentExerciseController {
         Exercise exercise = exerciseRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Exercise id " + id + " not found."));
 
-        AppUser user = getCurrentUser(authentication);
+        AppUser student = getCurrentUser(authentication);
 
-        checkExerciseAccess(user, exercise);
+        checkExerciseAccess(student, exercise);
 
         model.addAttribute("exercise", exercise);
         model.addAttribute("shuffledSentences", exercisePlayService.shuffledSentences(exercise));
@@ -97,23 +93,17 @@ public class StudentExerciseController {
             Authentication authentication,
             Model model
     ){
-        AppUser user = getCurrentUser(authentication);
+        AppUser student = getCurrentUser(authentication);
 
         Exercise exercise = exerciseRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Exercise id " + id + " not found."));
 
-        checkExerciseAccess(user, exercise);
+        checkExerciseAccess(student, exercise);
 
         ExercisePlayService.ExerciseAnswerResult result =
                 exercisePlayService.checkAnswer(exercise, sentenceIds, orders);
 
-        if (result.correct()
-                && !completionRepository.existsByStudentAndExercise(user, exercise)) {
-            StudentExerciseCompletion completion = new StudentExerciseCompletion();
-            completion.setStudent(user);
-            completion.setExercise(exercise);
-            completionRepository.save(completion);
-        }
+        studentProgressService.markCompletedIfCorrect(student, exercise, result.correct());
 
         model.addAttribute("exercise", exercise);
         model.addAttribute("shuffledSentences", result.displayedSentences());

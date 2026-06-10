@@ -39,7 +39,7 @@ public class ExercisePlayService {
                     .stream()
                     .filter(s -> s.getId().equals(sentenceId))
                     .findFirst()
-                    .orElseThrow();
+                    .orElseThrow(() -> new IllegalArgumentException("Sentence not found: " + sentenceId));
 
             displayedSentences.add(sentence);
             displayedOrders.add(studentOrder);

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Exercises</title>
 </head>
@@ -35,10 +35,15 @@
         <td th:text="${exercise.title}"></td>
         <td th:text="${#lists.size(exercise.sentences)}">5</td>
         <td>
-            <a th:href="@{/admin/exercises/{id}/play(id=${exercise.id})}"><button type="submit">Preview</button></a>
-            <a th:href="@{/admin/exercises/{id}/edit(id=${exercise.id})}"><button type="submit">Edit</button></a>
+            <form th:action="@{/admin/exercises/{id}/play(id=${exercise.id})}" method="get" style="display:inline;">
+                <button type="submit">Preview</button>
+            </form>
 
-            <form th:action="@{/admin/exercises/{id}/delete(id=${exercise.id})}" method="post">
+            <form th:action="@{/admin/exercises/{id}/edit(id=${exercise.id})}" method="get" style="display:inline;">
+                <button type="submit">Edit</button>
+            </form>
+
+            <form th:action="@{/admin/exercises/{id}/delete(id=${exercise.id})}" method="post" style="display:inline;">
                 <button type="submit">Delete</button>
             </form>
         </td>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>New Exercise</title>
 </head>
@@ -15,28 +15,38 @@
 
     <div>
         <label>Unit:</label>
-        <input type="number" th:field="*{unitNumber}" min="1" max="20">
+        <label>
+            <input type="number" th:field="*{unitNumber}" min="1" max="20">
+        </label>
     </div>
 
     <div>
         <label>Reading:</label>
-        <input type="number" th:field="*{readingNumber}" min="1" max="25">
+        <label>
+            <input type="number" th:field="*{readingNumber}" min="1" max="25">
+        </label>
     </div>
 
     <div>
         <label>Title:</label>
-        <input type="text" th:field="*{title}">
+        <label>
+            <input type="text" th:field="*{title}">
+        </label>
     </div>
 
     <div>
         <label>Text:</label>
         <p>Enter one sentence per line. Order from top to bottom. Separate sentences using the enter key.</p>
-        <textarea th:field="*{readingText}" rows="12" cols="80"></textarea>
+        <label>
+            <textarea th:field="*{readingText}" rows="12" cols="80"></textarea>
+        </label>
     </div>
 
     <div>
     <label>Audio Link:</label>
-        <input type="text" th:field="*{audioLink}">
+        <label>
+            <input type="text" th:field="*{audioLink}">
+        </label>
     </div>
 
     <button type="submit">Save</button>

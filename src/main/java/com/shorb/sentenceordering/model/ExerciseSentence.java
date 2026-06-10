@@ -15,7 +15,7 @@ public class ExerciseSentence{
     private int correctOrder;
 
     @ManyToOne
-    @JoinColumn(name = "exercise_id")
+    @JoinColumn(name = "exercise_id", nullable = false)
     private Exercise exercise;
 
 
