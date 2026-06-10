@@ -1,5 +1,6 @@
 package com.shorb.sentenceordering.controller;
 
+import com.shorb.sentenceordering.exception.ResourceNotFoundException;
 import com.shorb.sentenceordering.model.AppUser;
 import com.shorb.sentenceordering.model.Exercise;
 import com.shorb.sentenceordering.repository.AppUserRepository;
@@ -71,8 +72,7 @@ public class StudentExerciseController {
     @GetMapping("/student/exercises/{id}/play")
     public String playExercise(@PathVariable Long id, Authentication authentication, Model model) {
         Exercise exercise = exerciseRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid Exercise id " + id + " not found."));
-
+                .orElseThrow(() -> new ResourceNotFoundException("Exercise not found: " + id));
         AppUser student = getCurrentUser(authentication);
 
         checkExerciseAccess(student, exercise);
@@ -96,8 +96,7 @@ public class StudentExerciseController {
         AppUser student = getCurrentUser(authentication);
 
         Exercise exercise = exerciseRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid Exercise id " + id + " not found."));
-
+                .orElseThrow(() -> new ResourceNotFoundException("Exercise not found: " + id));
         checkExerciseAccess(student, exercise);
 
         ExercisePlayService.ExerciseAnswerResult result =

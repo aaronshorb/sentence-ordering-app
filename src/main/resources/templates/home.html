@@ -6,7 +6,6 @@
     <title>Sentence Ordering App</title>
 </head>
 <body>
-<h1>Sentence Ordering App</h1>
 
 <form sec:authorize="!isAuthenticated()" action="/login" method="get">
     <button type="submit">Login</button>
@@ -15,6 +14,8 @@
 <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post">
     <button type="submit">Logout</button>
 </form>
+
+<h1>Sentence Ordering App</h1>
 
 <div sec:authorize="hasRole('STUDENT')">
     <h2>Student</h2>

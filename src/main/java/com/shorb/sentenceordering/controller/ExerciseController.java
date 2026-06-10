@@ -1,5 +1,6 @@
 package com.shorb.sentenceordering.controller;
 
+import com.shorb.sentenceordering.exception.ResourceNotFoundException;
 import com.shorb.sentenceordering.form.ExerciseForm;
 import com.shorb.sentenceordering.model.Exercise;
 import com.shorb.sentenceordering.model.ExerciseSentence;
@@ -76,8 +77,7 @@ public class ExerciseController {
     @GetMapping("/admin/exercises/{id}/play")
     public String previewExercise(@PathVariable Long id, Model model) {
         Exercise exercise = exerciseRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid exercise id " + id + " not found."));
-
+                .orElseThrow(() -> new ResourceNotFoundException("Exercise not found: " + id));
         model.addAttribute("exercise", exercise);
         model.addAttribute("shuffledSentences", exercisePlayService.shuffledSentences(exercise));
         model.addAttribute("backUrl", "/admin/grades/" + exercise.getGrade() + "/exercises");
@@ -94,8 +94,7 @@ public class ExerciseController {
             Model model
     ) {
         Exercise exercise = exerciseRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid exercise id " + id + " not found."));
-
+                .orElseThrow(() -> new ResourceNotFoundException("Exercise not found: " + id));
         ExercisePlayService.ExerciseAnswerResult result =
                 exercisePlayService.checkAnswer(exercise, sentenceIds, orders);
 
@@ -112,7 +111,8 @@ public class ExerciseController {
     @GetMapping("/admin/exercises/{id}/edit")
     public String showEditExerciseForm(@PathVariable Long id, Model model) {
         Exercise exercise = exerciseRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid Exercise id " + id + " not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Exercise not found: " + id));
+
         ExerciseForm exerciseForm = createFormFromExercise(exercise);
 
         model.addAttribute("exerciseForm", exerciseForm);
@@ -136,8 +136,7 @@ public class ExerciseController {
         }
 
         Exercise exercise = exerciseRepository.findById(id)
-                        .orElseThrow(() -> new IllegalArgumentException("Invalid Exercise id " + id + " not found."));
-
+                .orElseThrow(() -> new ResourceNotFoundException("Exercise not found: " + id));
         updateExerciseFromForm(exerciseForm, exercise);
         exerciseRepository.save(exercise);
         return "redirect:/admin/grades/" + exercise.getGrade() + "/exercises";
@@ -146,8 +145,7 @@ public class ExerciseController {
     @PostMapping("/admin/exercises/{id}/delete")
     public String deleteExercise(@PathVariable("id") long id) {
         Exercise exercise = exerciseRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid Exercise id " + id + " not found."));
-
+                .orElseThrow(() -> new ResourceNotFoundException("Exercise not found: " + id));
         int grade = exercise.getGrade();
 
         exerciseRepository.delete(exercise);
