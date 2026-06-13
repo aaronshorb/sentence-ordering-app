@@ -79,6 +79,7 @@ public class StudentExerciseController {
 
         model.addAttribute("exercise", exercise);
         model.addAttribute("shuffledSentences", exercisePlayService.shuffledSentences(exercise));
+        model.addAttribute("displayedOrders", List.of());
         model.addAttribute("backUrl", "/student/exercises/units/" + exercise.getUnitNumber());
         model.addAttribute("playAction", "/student/exercises/" + id + "/play");
 

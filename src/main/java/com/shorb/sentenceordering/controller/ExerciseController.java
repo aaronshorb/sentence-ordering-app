@@ -80,6 +80,7 @@ public class ExerciseController {
                 .orElseThrow(() -> new ResourceNotFoundException("Exercise not found: " + id));
         model.addAttribute("exercise", exercise);
         model.addAttribute("shuffledSentences", exercisePlayService.shuffledSentences(exercise));
+        model.addAttribute("displayedOrders", List.of());
         model.addAttribute("backUrl", "/admin/grades/" + exercise.getGrade() + "/exercises");
         model.addAttribute("playAction", "/admin/exercises/" + id + "/play");
 

@@ -47,7 +47,7 @@
                     th:each="i : ${#numbers.sequence(1, #lists.size(shuffledSentences))}"
                     th:value="${i}"
                     th:text="${i}"
-                    th:selected="${displayedOrder.isEmpty() ? displayedOrders[stat.index] == i : i == stat.count}">
+                    th:selected="${displayedOrders.isEmpty() ? i == stat.count : displayedOrders[stat.index] == i}">
                     1
                 </option>
             </select>
