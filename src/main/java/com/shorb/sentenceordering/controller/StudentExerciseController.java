@@ -97,6 +97,7 @@ public class StudentExerciseController {
 
         Exercise exercise = exerciseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Exercise not found: " + id));
+
         checkExerciseAccess(student, exercise);
 
         ExercisePlayService.ExerciseAnswerResult result =
