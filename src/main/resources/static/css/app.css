@@ -223,6 +223,7 @@ a:hover { text-decoration: underline; }
     font-size: 13px;
     font-weight: 700;
     letter-spacing: 0;
+    white-space: nowrap;
 }
 
 .exercise-heading > p:not(.eyebrow),
@@ -1495,7 +1496,24 @@ audio { width: 100%; }
 
     .audio-progress { min-width: 70px; }
 
+    .exercise-heading > p:not(.eyebrow),
+    .exercise-instruction {
+        font-size: 15px;
+        line-height: 1.45;
+    }
+
+    .exercise-result-message {
+        padding: 13px var(--space-2xl);
+        font-size: 15px;
+        line-height: 1.45;
+    }
+
     .exercise-play-body .sentence-row { gap: var(--space-md); padding: 13px var(--space-lg); }
+
+    .exercise-play-body .sentence-text {
+        font-size: 15px;
+        line-height: 1.35;
+    }
 
     .reading-list-row {
         grid-template-columns: 38px minmax(0, 1fr);
