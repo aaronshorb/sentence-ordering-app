@@ -1,54 +1,84 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Exercises</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
-<body>
-
-<form th:action="@{/logout}" method="post">
-    <button type="submit">Logout</button>
-</form>
-
-<h1>Exercises</h1>
-
-<a href="/">Home</a>
-
-<table border="1">
-    <thead>
-    <tr>
-        <th>Unit</th>
-        <th>Reading</th>
-        <th>Title</th>
-        <th>Actions</th>
-        <th>Status</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    <tr th:each="exercise : ${exercises}">
-        <td th:text="${exercise.unitNumber}">1</td>
-        <td th:text="${exercise.readingNumber}">1</td>
-        <td th:text="${exercise.title}"></td>
-        <td>
-            <a th:href="@{/student/exercises/{id}/play(id=${exercise.id})}">Play</a>
-        </td>
-        <td th:text="${completedExerciseIds.contains(exercise.id) ? 'Completed' : ''}"></td>
-    </tr>
-    </tbody>
-</table>
-
-<p>
-    <a href="/student/exercises">
+<body class="exercise-play-body">
+<header class="app-topbar">
+    <a href="/student/exercises" class="topbar-back-link">
         Back to units
     </a>
-</p>
 
-<form th:action="@{/student/exercises/units/{unitNumber}/progress/reset(unitNumber=${unitNumber})}" method="post">
-    <button type="submit"
-            onclick="return confirm('Reset your progress for this unit?')">
-        Reset Unit Progress
-    </button>
-</form>
+    <nav class="topbar-nav" aria-label="Exercise navigation">
+        <a href="/" class="topbar-link">Home</a>
 
+        <form th:action="@{/logout}" method="post" class="inline-form" onsubmit="return confirm('Log out?')">
+            <button type="submit" class="topbar-button">Logout</button>
+        </form>
+    </nav>
+</header>
+
+<main class="student-exercise-page">
+    <section class="exercise-heading">
+        <p class="eyebrow">Unit <span th:text="${unitNumber}">1</span></p>
+        <h1>Readings</h1>
+        <p>Choose a reading to start the ordering exercise.</p>
+    </section>
+
+    <section class="reading-list-panel" aria-label="Readings">
+        <div class="reading-list-row" th:each="exercise : ${exercises}">
+            <div class="reading-status-icon"
+                 th:classappend="${completedExerciseIds.contains(exercise.id)} ? ' is-complete' : ''"
+                 aria-hidden="true">
+                <svg th:if="${completedExerciseIds.contains(exercise.id)}"
+                     class="reading-status-svg"
+                     viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="8"></circle>
+                    <path d="m8.8 12.1 2.1 2.1 4.5-4.7"></path>
+                </svg>
+                <svg th:unless="${completedExerciseIds.contains(exercise.id)}"
+                     class="reading-status-svg"
+                     viewBox="0 0 24 24">
+                    <path d="M4.5 6.5h5.2c1.3 0 2.3 1 2.3 2.3v8.7c0-1.1-.9-2-2-2H4.5z"></path>
+                    <path d="M19.5 6.5h-5.2c-1.3 0-2.3 1-2.3 2.3v8.7c0-1.1.9-2 2-2h5.5z"></path>
+                    <path d="M12 8.8v8.7"></path>
+                </svg>
+            </div>
+
+            <div class="reading-list-title">
+                <div class="reading-list-meta">
+                    <span class="reading-meta-label">
+                        Reading <span th:text="${exercise.readingNumber}">1</span>
+                    </span>
+                    <span class="reading-complete-pill"
+                          th:if="${completedExerciseIds.contains(exercise.id)}">
+                        Completed
+                    </span>
+                </div>
+
+                <div class="reading-title-line">
+                    <h2 th:text="${exercise.title}">Reading title</h2>
+                </div>
+            </div>
+
+            <a class="reading-outline-button"
+               th:href="@{/student/exercises/{id}/play(id=${exercise.id})}"
+               th:text="${completedExerciseIds.contains(exercise.id)} ? 'Redo' : 'Open'">
+                Open
+            </a>
+        </div>
+    </section>
+
+    <div class="student-page-actions">
+        <form th:action="@{/student/exercises/units/{unitNumber}/progress/reset(unitNumber=${unitNumber})}" method="post" class="inline-form">
+            <button type="submit"
+                    class="student-reset-button"
+                    onclick="return confirm('Reset your progress for this unit?')">
+                Reset Unit Progress
+            </button>
+        </form>
+    </div>
+</main>
 </body>
 </html>

@@ -1,60 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>New Exercise</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
-<body>
-<h1>New Exercise</h1>
-
-<form th:action="@{/admin/grades/{grade}/exercises(grade=${grade})}" th:object="${exerciseForm}" method="post">
-    <p>
-        Grade: <span th:text="${grade}">1</span>
-    </p>
-
-    <input type="hidden" th:field="*{grade}">
-
-    <div>
-        <label>Unit:</label>
-        <label>
-            <input type="number" th:field="*{unitNumber}" min="1" max="20">
-        </label>
-    </div>
-
-    <div>
-        <label>Reading:</label>
-        <label>
-            <input type="number" th:field="*{readingNumber}" min="1" max="25">
-        </label>
-    </div>
-
-    <div>
-        <label>Title:</label>
-        <label>
-            <input type="text" th:field="*{title}">
-        </label>
-    </div>
-
-    <div>
-        <label>Text:</label>
-        <p>Enter one sentence per line. Order from top to bottom. Separate sentences using the enter key.</p>
-        <label>
-            <textarea th:field="*{readingText}" rows="12" cols="80"></textarea>
-        </label>
-    </div>
-
-    <div>
-    <label>Audio Link:</label>
-        <label>
-            <input type="text" th:field="*{audioLink}">
-        </label>
-    </div>
-
-    <button type="submit">Save</button>
-</form>
-<p>
-    <a th:href="@{/admin/grades/{grade}/exercises(grade=${grade})}">
-        Back to exercises
+<body class="app-soft-body">
+<header class="app-topbar">
+    <a class="topbar-back-link"
+       th:href="@{/admin/grades/{grade}/exercises(grade=${grade}, unitNumber=${exerciseForm.unitNumber})}">
+        Back to Admin Panel
     </a>
-</p>
+
+    <nav class="topbar-nav" aria-label="Primary">
+        <a href="/" class="topbar-link">Home</a>
+
+        <form th:action="@{/logout}" method="post" class="inline-form" onsubmit="return confirm('Log out?')">
+            <button type="submit" class="topbar-button">Logout</button>
+        </form>
+    </nav>
+</header>
+
+<main class="content-page form-page">
+    <section class="content-heading">
+        <p class="eyebrow">Grade <span th:text="${grade}">1</span></p>
+        <h1>New Exercise</h1>
+        <p>Create a reading by entering one sentence per line.</p>
+    </section>
+
+    <form th:action="@{/admin/grades/{grade}/exercises(grade=${grade})}" th:object="${exerciseForm}" method="post" class="detail-form">
+        <div class="detail-form-card">
+            <input type="hidden" th:field="*{grade}">
+
+            <div class="message message-error"
+                 th:if="${#fields.hasGlobalErrors()}"
+                 th:each="error : ${#fields.globalErrors()}"
+                 th:text="${error}">
+                An exercise already exists for this grade, unit, and reading.
+            </div>
+
+            <div class="form-field-grid">
+                <div class="field-group">
+                    <label for="unitNumber">Unit</label>
+                    <input id="unitNumber" type="number" th:field="*{unitNumber}" min="1" max="20">
+                </div>
+
+                <div class="field-group">
+                    <label for="readingNumber">Reading</label>
+                    <input id="readingNumber" type="number" th:field="*{readingNumber}" min="1" max="25">
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label for="title">Title</label>
+                <input id="title" type="text" th:field="*{title}">
+            </div>
+
+            <div class="field-group">
+                <label for="readingText">Text</label>
+                <p class="field-help">Enter one sentence per line. Order from top to bottom.</p>
+                <textarea id="readingText" th:field="*{readingText}" rows="6"></textarea>
+            </div>
+
+            <div class="field-group">
+                <label for="audioLink">Audio Link</label>
+                <input id="audioLink" type="text" th:field="*{audioLink}">
+            </div>
+        </div>
+
+        <button type="submit" class="detail-form-submit primary-submit-button">Save</button>
+    </form>
+</main>
 </body>
 </html>

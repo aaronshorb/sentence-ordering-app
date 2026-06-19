@@ -1,61 +1,108 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Play Exercise</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
-<body>
-
-<form th:action="@{/logout}" method="post">
-    <button type="submit">Logout</button>
-</form>
-
-<h1>
-    Unit: <span th:text="${exercise.unitNumber}">1</span>
-    Reading: <span th:text="${exercise.readingNumber}">1</span>
-</h1>
-
-<h2 th:text="${exercise.title}">Exercise Title</h2>
-
-<h2 th:if="${resultMessage}" th:text="${resultMessage}">Result</h2>
-
-<p>
-    <a th:href="${backUrl}">
+<body class="exercise-play-body">
+<header class="app-topbar">
+    <a th:href="${backUrl}" class="topbar-back-link">
         Back to exercises
     </a>
-</p>
-<figure th:if="${exercise.audioLink != null and !exercise.audioLink.isBlank()}">
-    <audio controls>
-        <source th:src="${exercise.audioLink}" type="audio/mpeg">
-        Audio element not supported.
-    </audio>
-</figure>
 
-<section>
-    <h2>Put the sentences in order</h2>
-    <p>Enter the correct order number for each sentence.</p>
-</section>
+    <nav class="topbar-nav" aria-label="Exercise navigation">
+        <a href="/" class="topbar-link">Home</a>
 
-<form th:action="${playAction}" method="post">
-    <div th:each="sentence, stat : ${shuffledSentences}">
-        <input type="hidden" name="sentenceIds" th:value="${sentence.id}">
+        <form th:action="@{/logout}" method="post" class="inline-form" onsubmit="return confirm('Log out?')">
+            <button type="submit" class="topbar-button">Logout</button>
+        </form>
+    </nav>
+</header>
 
-        <span th:text="${sentence.text}">Sentence text</span>
+<main class="exercise-player">
+    <section class="exercise-heading">
+        <p class="eyebrow">
+            Unit <span th:text="${exercise.unitNumber}">1</span>
+            / Reading <span th:text="${exercise.readingNumber}">1</span>
+        </p>
+        <h1 th:text="${exercise.title}">Exercise Title</h1>
+    </section>
 
-        <label>
-            <select name="orders" required>
-                <option
-                    th:each="i : ${#numbers.sequence(1, #lists.size(shuffledSentences))}"
-                    th:value="${i}"
-                    th:text="${i}"
-                    th:selected="${displayedOrders.isEmpty() ? i == stat.count : displayedOrders[stat.index] == i}">
-                    1
-                </option>
-            </select>
-        </label>
-    </div>
+    <section class="audio-strip" th:if="${exercise.audioLink != null and !exercise.audioLink.isBlank()}">
+        <button type="button" class="audio-play-button" data-audio-toggle aria-label="Play audio">
+            <span class="audio-play-symbol" aria-hidden="true"></span>
+        </button>
+        <input class="audio-progress"
+               data-audio-progress
+               type="range"
+               min="0"
+               max="100"
+               value="0"
+               step="0.1"
+               aria-label="Audio progress">
+        <button type="button" class="audio-volume-button" data-audio-volume-toggle aria-label="Mute audio">
+            <svg class="audio-volume-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path class="audio-volume-speaker" d="M4 9v6h4l5 4V5L8 9H4z"></path>
+                <path class="audio-volume-wave" d="M16 9.5c1 1 1 4 0 5"></path>
+                <path class="audio-volume-wave" d="M18.5 7c2 2.3 2 7.7 0 10"></path>
+                <path class="audio-volume-slash" d="M17 9l4 6M21 9l-4 6"></path>
+            </svg>
+        </button>
+        <audio data-audio-player preload="metadata">
+            <source th:src="${exercise.audioLink}" type="audio/mpeg">
+            Audio element not supported.
+        </audio>
+    </section>
 
-    <button type="submit">Check Answer</button>
-</form>
+    <p class="exercise-instruction">
+        Listen to the audio, then drag the sentences into the correct order.
+    </p>
 
+    <form th:action="${playAction}" method="post" class="exercise-form">
+        <div th:if="${resultMessage}"
+             class="exercise-result-message"
+             th:classappend="${resultCorrect} ? ' is-correct' : ' is-incorrect'"
+             th:text="${resultMessage}">
+            Result
+        </div>
+
+        <div class="sentence-list" data-sortable-sentences>
+            <div class="sentence-row"
+                 th:each="feedback : ${sentenceFeedback}"
+                 th:classappend="${feedback.correctPosition() == null ? '' : (feedback.correctPosition() ? ' is-correct is-fixed' : ' is-incorrect')}">
+                <input type="hidden" name="sentenceIds" th:value="${feedback.sentence().id}">
+
+                <span class="sentence-number" aria-hidden="true"></span>
+                <span class="sentence-text" th:text="${feedback.sentence().text}">Sentence text</span>
+                <span class="sentence-feedback-mark"
+                      th:if="${feedback.correctPosition() != null}"
+                      aria-hidden="true">
+                    <svg th:if="${feedback.correctPosition() == true}" viewBox="0 0 24 24" focusable="false">
+                        <path d="M20 6 9 17l-5-5"></path>
+                    </svg>
+                    <svg th:if="${feedback.correctPosition() == false}" viewBox="0 0 24 24" focusable="false">
+                        <path d="m6 6 12 12"></path>
+                        <path d="m18 6-12 12"></path>
+                    </svg>
+                </span>
+            </div>
+        </div>
+
+        <div class="exercise-submit-row">
+            <button th:if="${resultCorrect == null or !resultCorrect}"
+                    type="submit"
+                    class="check-order-button primary-submit-button">
+                Check Order
+            </button>
+            <a th:if="${resultCorrect == true}"
+               th:href="${backUrl}"
+               class="check-order-button primary-submit-button">
+                Back to exercises
+            </a>
+        </div>
+    </form>
+</main>
+<script th:src="@{/js/sortable.min.js}"></script>
+<script th:src="@{/js/sentence-sort.js}"></script>
 </body>
 </html>

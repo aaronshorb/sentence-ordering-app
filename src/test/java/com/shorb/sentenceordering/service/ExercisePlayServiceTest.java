@@ -35,13 +35,16 @@ class ExercisePlayServiceTest {
 
         var result = service.checkAnswer(
                 exercise,
-                List.of(1L, 2L),
-                List.of(1, 2)
+                List.of(1L, 2L)
         );
 
         assertThat(result.correct()).isTrue();
-        assertThat(result.displayedSentences()).containsExactly(first, second);
-        assertThat(result.displayedOrders()).isEmpty();
+        assertThat(result.displayedSentences())
+                .extracting(ExercisePlayService.SentenceAnswerFeedback::sentence)
+                .containsExactly(first, second);
+        assertThat(result.displayedSentences())
+                .extracting(ExercisePlayService.SentenceAnswerFeedback::correctPosition)
+                .containsExactly(true, true);
     }
 
     @Test
@@ -65,13 +68,16 @@ class ExercisePlayServiceTest {
 
         var result = service.checkAnswer(
                 exercise,
-                List.of(1L, 2L),
-                List.of(2, 1)
+                List.of(2L, 1L)
         );
 
         assertThat(result.correct()).isFalse();
-        assertThat(result.displayedSentences()).containsExactly(first, second);
-        assertThat(result.displayedOrders()).containsExactly(2, 1);
+        assertThat(result.displayedSentences())
+                .extracting(ExercisePlayService.SentenceAnswerFeedback::sentence)
+                .containsExactly(second, first);
+        assertThat(result.displayedSentences())
+                .extracting(ExercisePlayService.SentenceAnswerFeedback::correctPosition)
+                .containsExactly(false, false);
     }
 
     @Test
@@ -80,8 +86,7 @@ class ExercisePlayServiceTest {
 
         assertThatThrownBy(() -> service.checkAnswer(
                 exercise,
-                List.of(1L, 2L),
-                List.of(1)
+                List.of(1L, 2L)
         ))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid sentence ids size 2");
@@ -100,8 +105,7 @@ class ExercisePlayServiceTest {
 
         assertThatThrownBy(() -> service.checkAnswer(
                 exercise,
-                List.of(1L),
-                List.of(1)
+                List.of(1L)
         ))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Sentence not found: 1");

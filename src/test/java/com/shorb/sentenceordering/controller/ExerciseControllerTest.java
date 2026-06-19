@@ -1,14 +1,10 @@
 package com.shorb.sentenceordering.controller;
 
 import com.shorb.sentenceordering.form.ExerciseForm;
-import com.shorb.sentenceordering.model.AppUser;
 import com.shorb.sentenceordering.model.Exercise;
 import com.shorb.sentenceordering.model.ExerciseSentence;
-import com.shorb.sentenceordering.repository.AppUserRepository;
 import com.shorb.sentenceordering.repository.ExerciseRepository;
-import com.shorb.sentenceordering.repository.StudentExerciseCompletionRepository;
 import com.shorb.sentenceordering.service.ExercisePlayService;
-import com.shorb.sentenceordering.service.StudentProgressService;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,16 +13,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.ui.Model;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 
@@ -56,7 +48,7 @@ public class ExerciseControllerTest {
 
         String viewName = controller.saveExercise(1, exerciseForm, bindingResult, model);
 
-        assertThat(viewName).isEqualTo("redirect:/admin/grades/1/exercises");
+        assertThat(viewName).isEqualTo("redirect:/admin/grades/1/exercises?unitNumber=2");
 
         verify(exerciseRepository).save(argThat(exercise ->
                         exercise.getSentences().size() == 2 &&
@@ -89,7 +81,7 @@ public class ExerciseControllerTest {
 
         String viewName = controller.updateExercise(1L, exerciseForm, bindingResult, model);
 
-        assertThat(viewName).isEqualTo("redirect:/admin/grades/1/exercises");
+        assertThat(viewName).isEqualTo("redirect:/admin/grades/1/exercises?unitNumber=2");
 
         verify(exerciseRepository).save(argThat(exercise ->
                 exercise == existingExercise &&
@@ -105,18 +97,17 @@ public class ExerciseControllerTest {
     void deleteExerciseRedirectsToGradeExerciseList() {
         Exercise existingExercise = new Exercise();
         existingExercise.setGrade(1);
+        existingExercise.setUnitNumber(2);
 
         when(exerciseRepository.findById(1L)).thenReturn(Optional.of(existingExercise));
 
         String viewName = controller.deleteExercise(1L);
 
-        assertThat(viewName).isEqualTo("redirect:/admin/grades/1/exercises");
+        assertThat(viewName).isEqualTo("redirect:/admin/grades/1/exercises?unitNumber=2");
 
         verify(exerciseRepository).delete(existingExercise);
     }
 }
-
-
 
 
 

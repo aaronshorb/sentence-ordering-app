@@ -1,75 +1,184 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Exercises</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
-<body>
+<body class="app-soft-body">
+<header class="app-topbar">
+    <span class="app-topbar-spacer" aria-hidden="true"></span>
 
-<form th:action="@{/logout}" method="post">
-    <button type="submit">Logout</button>
-</form>
+    <nav class="topbar-nav" aria-label="Primary">
+        <a href="/" class="topbar-link">Home</a>
 
-<h1>Exercises</h1>
+        <form th:action="@{/logout}" method="post" class="inline-form" onsubmit="return confirm('Log out?')">
+            <button type="submit" class="topbar-button">Logout</button>
+        </form>
+    </nav>
+</header>
 
-<a href="/">Home</a>
+<main class="content-page admin-panel-page">
+    <section class="content-heading">
+        <p class="eyebrow">Admin</p>
+        <h1>Exercises</h1>
+        <p>Preview, edit, delete, and add exercises.</p>
+    </section>
 
-<table border="1">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Grade</th>
-        <th>Unit</th>
-        <th>Reading</th>
-        <th>Title</th>
-        <th>Sentences</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
+    <nav class="grade-tabs" aria-label="Grade navigation">
+        <a href="/admin/grades/1/exercises"
+           class="grade-tab"
+           th:classappend="${grade == 1} ? ' is-active' : ''">
+            1st Grade
+        </a>
+        <a href="/admin/grades/2/exercises"
+           class="grade-tab"
+           th:classappend="${grade == 2} ? ' is-active' : ''">
+            2nd Grade
+        </a>
+        <a href="/admin/grades/3/exercises"
+           class="grade-tab"
+           th:classappend="${grade == 3} ? ' is-active' : ''">
+            3rd Grade
+        </a>
 
-    <tbody>
-    <tr th:each="exercise : ${exercises}">
-        <td th:text="${exercise.id}">1</td>
-        <td th:text="${exercise.grade}">1</td>
-        <td th:text="${exercise.unitNumber}">1</td>
-        <td th:text="${exercise.readingNumber}">1</td>
-        <td th:text="${exercise.title}"></td>
-        <td th:text="${#lists.size(exercise.sentences)}">5</td>
-        <td>
-            <form th:action="@{/admin/exercises/{id}/play(id=${exercise.id})}" method="get" style="display:inline;">
-                <button type="submit">Preview</button>
-            </form>
+        <details class="action-menu">
+            <summary class="menu-button" aria-label="Grade actions">
+                <span aria-hidden="true">···</span>
+            </summary>
 
-            <form th:action="@{/admin/exercises/{id}/edit(id=${exercise.id})}" method="get" style="display:inline;">
-                <button type="submit">Edit</button>
-            </form>
+            <div class="action-menu-list">
+                <form th:action="@{/admin/grades/{grade}/progress/reset(grade=${grade})}"
+                      method="post"
+                      class="action-menu-form">
+                    <button type="submit"
+                            class="action-menu-item is-danger"
+                            onclick="return confirm('Reset all student progress for this grade?')">
+                        Reset all grade progress
+                    </button>
+                </form>
+            </div>
+        </details>
+    </nav>
 
-            <form th:action="@{/admin/exercises/{id}/delete(id=${exercise.id})}" method="post" style="display:inline;">
-                <button type="submit">Delete</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
+    <div class="admin-panel-layout">
+        <nav class="unit-sidebar"
+             th:if="${!#lists.isEmpty(units)}"
+             aria-label="Units">
+            <a class="unit-sidebar-link"
+               th:each="unit : ${units}"
+               th:href="@{/admin/grades/{grade}/exercises(grade=${grade}, unitNumber=${unit})}"
+               th:classappend="${unit == selectedUnit} ? ' is-active' : ''">
+                Unit <span th:text="${unit}">1</span>
+            </a>
+        </nav>
 
-<form th:action="@{/admin/grades/{grade}/exercises/new(grade=${grade})}">
-    <button type="submit">
-        Add Exercise
-    </button>
-</form>
+        <section class="reading-panel">
+            <header class="reading-panel-header">
+                <div class="reading-panel-title-group">
+                    <h2 th:if="${selectedUnit != null}">
+                        Unit <span th:text="${selectedUnit}">1</span>
+                        ·
+                        <span th:text="${#lists.size(exercises)}">0</span>
+                        <span th:text="${#lists.size(exercises) == 1 ? 'exercise' : 'exercises'}">exercises</span>
+                    </h2>
 
-<form th:action="@{/admin/grades/{grade}/progress(grade=${grade})}">
-    <button type="submit">
-        View Student Progress
-    </button>
-</form>
+                    <h2 th:if="${selectedUnit == null and !#lists.isEmpty(units)}">Select a unit</h2>
+                    <h2 th:if="${#lists.isEmpty(units)}">No units yet</h2>
+                </div>
 
-<form th:action="@{/admin/grades/{grade}/progress/reset(grade=${grade})}" method="post">
-    <button type="submit"
-            onclick="return confirm('Reset all student progress for this grade?')">
-        Reset Student Progress
-    </button>
-</form>
+                <div class="reading-panel-actions">
+                    <a class="primary-action-button"
+                       th:if="${selectedUnit != null}"
+                       th:href="@{/admin/grades/{grade}/exercises/new(grade=${grade}, unitNumber=${selectedUnit})}">
+                        + Add Exercise
+                    </a>
 
+                    <a class="primary-action-button"
+                       th:if="${selectedUnit == null}"
+                       th:href="@{/admin/grades/{grade}/exercises/new(grade=${grade})}">
+                        + Add Exercise
+                    </a>
 
+                    <details class="action-menu">
+                        <summary class="menu-button" aria-label="Unit actions">
+                            <span aria-hidden="true">···</span>
+                        </summary>
+
+                        <div class="action-menu-list">
+                            <a class="action-menu-item"
+                               th:if="${selectedUnit == null}"
+                               th:href="@{/admin/grades/{grade}/progress(grade=${grade})}">
+                                View student progress
+                            </a>
+
+                            <a class="action-menu-item"
+                               th:if="${selectedUnit != null}"
+                               th:href="@{/admin/grades/{grade}/progress/units/{unitNumber}(grade=${grade}, unitNumber=${selectedUnit})}">
+                                View student progress
+                            </a>
+
+                            <form th:action="@{/admin/grades/{grade}/progress/units/{unitNumber}/reset(grade=${grade}, unitNumber=${selectedUnit})}"
+                                  th:if="${selectedUnit != null}"
+                                  method="post"
+                                  class="action-menu-form">
+                                <button type="submit"
+                                        class="action-menu-item is-danger"
+                                        onclick="return confirm('Reset student progress for this unit?')">
+                                    Reset unit progress
+                                </button>
+                            </form>
+                        </div>
+                    </details>
+                </div>
+            </header>
+
+            <div class="reading-panel-empty" th:if="${selectedUnit == null and !#lists.isEmpty(units)}">
+                Select a unit to view its readings.
+            </div>
+
+            <div class="reading-panel-empty" th:if="${selectedUnit != null and #lists.isEmpty(exercises)}">
+                No readings have been added for this unit yet.
+            </div>
+
+            <div class="reading-panel-empty" th:if="${#lists.isEmpty(units)}">
+                Add an exercise to create the first unit for this grade.
+            </div>
+
+            <div class="admin-reading-list" th:if="${selectedUnit != null and !#lists.isEmpty(exercises)}">
+                <div class="admin-reading-row" th:each="exercise : ${exercises}">
+                    <span class="reading-number-pill"
+                          th:text="'Reading ' + ${exercise.readingNumber}">
+                        Reading 1
+                    </span>
+
+                    <span class="admin-reading-title" th:text="${exercise.title}">Title</span>
+
+                    <div class="admin-reading-actions">
+                        <a class="outline-action-button"
+                           th:href="@{/admin/exercises/{id}/play(id=${exercise.id})}">
+                            Preview
+                        </a>
+
+                        <a class="outline-action-button"
+                           th:href="@{/admin/exercises/{id}/edit(id=${exercise.id})}">
+                            Edit
+                        </a>
+
+                        <form th:action="@{/admin/exercises/{id}/delete(id=${exercise.id})}"
+                              method="post"
+                              class="inline-form">
+                            <button type="submit"
+                                    class="outline-action-button is-danger"
+                                    onclick="return confirm('Delete this exercise?')">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+<script th:src="@{/js/action-menu.js}"></script>
 </body>
 </html>

@@ -4,7 +4,6 @@ import com.shorb.sentenceordering.model.AppUser;
 import com.shorb.sentenceordering.model.Exercise;
 import com.shorb.sentenceordering.repository.AppUserRepository;
 import com.shorb.sentenceordering.repository.ExerciseRepository;
-import com.shorb.sentenceordering.repository.StudentExerciseCompletionRepository;
 import com.shorb.sentenceordering.service.ExercisePlayService;
 import com.shorb.sentenceordering.service.StudentProgressService;
 
@@ -35,8 +34,6 @@ class StudentExerciseControllerTest {
     private AppUserRepository appUserRepository;
     @Mock
     private ExercisePlayService exercisePlayService;
-    @Mock
-    private StudentExerciseCompletionRepository completionRepository;
     @Mock
     private StudentProgressService studentProgressService;
     @Mock
@@ -140,24 +137,21 @@ class StudentExerciseControllerTest {
         exercise.setUnitNumber(2);
 
         List<Long> sentenceIds = List.of(1L, 2L);
-        List<Integer> orders = List.of(1, 2);
 
         ExercisePlayService.ExerciseAnswerResult result =
                 new ExercisePlayService.ExerciseAnswerResult(
                         true,
-                        List.of(),
                         List.of()
                 );
 
         when(authentication.getName()).thenReturn("aaron");
         when(appUserRepository.findByUsername("aaron")).thenReturn(Optional.of(student));
         when(exerciseRepository.findById(1L)).thenReturn(Optional.of(exercise));
-        when(exercisePlayService.checkAnswer(exercise, sentenceIds, orders)).thenReturn(result);
+        when(exercisePlayService.checkAnswer(exercise, sentenceIds)).thenReturn(result);
 
         controller.checkExercise(
                 1L,
                 sentenceIds,
-                orders,
                 authentication,
                 model
         );
@@ -176,24 +170,21 @@ class StudentExerciseControllerTest {
         exercise.setUnitNumber(2);
 
         List<Long> sentenceIds = List.of(1L, 2L);
-        List<Integer> orders = List.of(2, 1);
 
         ExercisePlayService.ExerciseAnswerResult result =
                 new ExercisePlayService.ExerciseAnswerResult(
                         false,
-                        List.of(),
-                        List.of(2, 1)
+                        List.of()
                 );
 
         when(authentication.getName()).thenReturn("aaron");
         when(appUserRepository.findByUsername("aaron")).thenReturn(Optional.of(student));
         when(exerciseRepository.findById(1L)).thenReturn(Optional.of(exercise));
-        when(exercisePlayService.checkAnswer(exercise, sentenceIds, orders)).thenReturn(result);
+        when(exercisePlayService.checkAnswer(exercise, sentenceIds)).thenReturn(result);
 
         controller.checkExercise(
                 1L,
                 sentenceIds,
-                orders,
                 authentication,
                 model
         );

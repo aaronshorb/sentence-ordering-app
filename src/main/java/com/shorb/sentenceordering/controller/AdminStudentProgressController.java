@@ -9,7 +9,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Controller
@@ -46,12 +48,26 @@ public class AdminStudentProgressController {
         List<Exercise> exercises = exerciseRepository.findByGradeAndUnitNumberOrderByReadingNumberAsc(grade, unitNumber);
         List<AppUser> students = appUserRepository.findByRoleAndGradeOrderByUsernameAsc(AppUser.Role.STUDENT, grade);
         Set<String> completedKeys = studentProgressService.getCompletedExerciseKeys(students, exercises);
+        Map<Long, Integer> completedCounts = new HashMap<>();
+
+        for (AppUser student : students) {
+            int completedCount = 0;
+
+            for (Exercise exercise : exercises) {
+                if (completedKeys.contains(student.getId() + "-" + exercise.getId())) {
+                    completedCount++;
+                }
+            }
+
+            completedCounts.put(student.getId(), completedCount);
+        }
 
         model.addAttribute("grade", grade);
         model.addAttribute("unitNumber", unitNumber);
         model.addAttribute("exercises", exercises);
         model.addAttribute("students", students);
         model.addAttribute("completedKeys", completedKeys);
+        model.addAttribute("completedCounts", completedCounts);
 
         return "admin/students/unit-progress";
     }
@@ -61,5 +77,15 @@ public class AdminStudentProgressController {
         studentProgressService.resetGradeCompletions(grade);
 
         return "redirect:/admin/grades/" + grade + "/exercises";
+    }
+
+    @PostMapping("/admin/grades/{grade}/progress/units/{unitNumber}/reset")
+    public String resetGradeUnitProgress(
+            @PathVariable int grade,
+            @PathVariable int unitNumber
+    ){
+        studentProgressService.resetGradeUnitCompletions(grade, unitNumber);
+
+        return "redirect:/admin/grades/" + grade + "/exercises?unitNumber=" + unitNumber;
     }
 }

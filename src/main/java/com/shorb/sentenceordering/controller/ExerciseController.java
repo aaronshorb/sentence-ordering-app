@@ -17,6 +17,9 @@ import java.util.List;
 @Controller
 public class ExerciseController {
 
+    private static final String DUPLICATE_EXERCISE_MESSAGE =
+            "An exercise for this unit and reading already exists.";
+
     private final ExerciseRepository exerciseRepository;
     private final ExercisePlayService exercisePlayService;
 
@@ -29,22 +32,36 @@ public class ExerciseController {
     }
 
     @GetMapping("/admin/grades/{grade}/exercises")
-    public String listExercisesByGrade(@PathVariable int grade, Model model) {
-        model.addAttribute(
-                "exercises",
-                exerciseRepository.findByGradeOrderByUnitNumberAscReadingNumberAsc(grade)
-        );
+    public String listExercisesByGrade(
+            @PathVariable int grade,
+            @RequestParam(required = false) Integer unitNumber,
+            Model model) {
 
         model.addAttribute("grade", grade);
+        model.addAttribute("units", exerciseRepository.findDistinctUnitNumbersByGrade(grade));
+        model.addAttribute("selectedUnit", unitNumber);
+
+        if (unitNumber == null) {
+            model.addAttribute("exercises", List.of());
+        } else {
+            model.addAttribute(
+                    "exercises",
+                    exerciseRepository.findByGradeAndUnitNumberOrderByReadingNumberAsc(grade, unitNumber)
+            );
+        }
 
         return "admin/exercises/list";
     }
 
     @GetMapping("/admin/grades/{grade}/exercises/new")
-    public String showCreateExerciseForm(@PathVariable int grade, Model model) {
+    public String showCreateExerciseForm(
+            @PathVariable int grade,
+            @RequestParam(required = false) Integer unitNumber,
+            Model model
+    ) {
         ExerciseForm exerciseForm = new ExerciseForm();
         exerciseForm.setGrade(grade);
-        exerciseForm.setUnitNumber(1);
+        exerciseForm.setUnitNumber(unitNumber == null ? 1 : unitNumber);
         exerciseForm.setReadingNumber(1);
 
         model.addAttribute("exerciseForm", exerciseForm);
@@ -67,21 +84,28 @@ public class ExerciseController {
             return "admin/exercises/form";
         }
 
+        if (duplicateExerciseExists(exerciseForm)) {
+            rejectDuplicateExercise(bindingResult);
+            model.addAttribute("grade", grade);
+            return "admin/exercises/form";
+        }
+
         Exercise exercise = new Exercise();
         updateExerciseFromForm(exerciseForm, exercise);
 
         exerciseRepository.save(exercise);
-        return "redirect:/admin/grades/" + grade + "/exercises";
+        return "redirect:/admin/grades/" + grade + "/exercises?unitNumber=" + exercise.getUnitNumber();
     }
 
     @GetMapping("/admin/exercises/{id}/play")
     public String previewExercise(@PathVariable Long id, Model model) {
         Exercise exercise = exerciseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Exercise not found: " + id));
+        List<ExerciseSentence> shuffledSentences = exercisePlayService.shuffledSentences(exercise);
+
         model.addAttribute("exercise", exercise);
-        model.addAttribute("shuffledSentences", exercisePlayService.shuffledSentences(exercise));
-        model.addAttribute("displayedOrders", List.of());
-        model.addAttribute("backUrl", "/admin/grades/" + exercise.getGrade() + "/exercises");
+        model.addAttribute("sentenceFeedback", exercisePlayService.uncheckedSentenceFeedback(shuffledSentences));
+        model.addAttribute("backUrl", "/admin/grades/" + exercise.getGrade() + "/exercises?unitNumber=" + exercise.getUnitNumber());
         model.addAttribute("playAction", "/admin/exercises/" + id + "/play");
 
         return "exercises/play";
@@ -91,19 +115,20 @@ public class ExerciseController {
     public String checkExercisePreview(
             @PathVariable Long id,
             @RequestParam List<Long> sentenceIds,
-            @RequestParam List<Integer> orders,
             Model model
     ) {
         Exercise exercise = exerciseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Exercise not found: " + id));
         ExercisePlayService.ExerciseAnswerResult result =
-                exercisePlayService.checkAnswer(exercise, sentenceIds, orders);
+                exercisePlayService.checkAnswer(exercise, sentenceIds);
 
         model.addAttribute("exercise", exercise);
-        model.addAttribute("shuffledSentences", result.displayedSentences());
-        model.addAttribute("displayedOrders", result.displayedOrders());
-        model.addAttribute("resultMessage", result.correct() ? "Right!" : "Wrong. Try again.");
-        model.addAttribute("backUrl", "/admin/grades/" + exercise.getGrade() + "/exercises");
+        model.addAttribute("sentenceFeedback", result.displayedSentences());
+        model.addAttribute("resultMessage", result.correct()
+                ? "Right! All sentences are in the correct order."
+                : "Some sentences are out of order. Rearrange the highlighted sentences.");
+        model.addAttribute("resultCorrect", result.correct());
+        model.addAttribute("backUrl", "/admin/grades/" + exercise.getGrade() + "/exercises?unitNumber=" + exercise.getUnitNumber());
         model.addAttribute("playAction", "/admin/exercises/" + id + "/play");
 
         return "exercises/play";
@@ -136,11 +161,17 @@ public class ExerciseController {
             return "admin/exercises/edit";
         }
 
+        if (duplicateExerciseExists(exerciseForm)) {
+            rejectDuplicateExercise(bindingResult);
+            model.addAttribute("grade", exerciseForm.getGrade());
+            return "admin/exercises/edit";
+        }
+
         Exercise exercise = exerciseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Exercise not found: " + id));
         updateExerciseFromForm(exerciseForm, exercise);
         exerciseRepository.save(exercise);
-        return "redirect:/admin/grades/" + exercise.getGrade() + "/exercises";
+        return "redirect:/admin/grades/" + exercise.getGrade() + "/exercises?unitNumber=" + exercise.getUnitNumber();
     }
 
     @PostMapping("/admin/exercises/{id}/delete")
@@ -148,9 +179,10 @@ public class ExerciseController {
         Exercise exercise = exerciseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Exercise not found: " + id));
         int grade = exercise.getGrade();
+        int unitNumber = exercise.getUnitNumber();
 
         exerciseRepository.delete(exercise);
-        return "redirect:/admin/grades/" + grade + "/exercises";
+        return "redirect:/admin/grades/" + grade + "/exercises?unitNumber=" + unitNumber;
     }
 
     private void updateExerciseFromForm(ExerciseForm form, Exercise exercise) {
@@ -203,6 +235,27 @@ public class ExerciseController {
         form.setReadingText(readingText.toString());
 
         return form;
+    }
+
+    private boolean duplicateExerciseExists(ExerciseForm form) {
+        if (form.getId() == null) {
+            return exerciseRepository.existsByGradeAndUnitNumberAndReadingNumber(
+                    form.getGrade(),
+                    form.getUnitNumber(),
+                    form.getReadingNumber()
+            );
+        }
+
+        return exerciseRepository.existsByGradeAndUnitNumberAndReadingNumberAndIdNot(
+                form.getGrade(),
+                form.getUnitNumber(),
+                form.getReadingNumber(),
+                form.getId()
+        );
+    }
+
+    private void rejectDuplicateExercise(BindingResult bindingResult) {
+        bindingResult.reject("duplicateExercise", DUPLICATE_EXERCISE_MESSAGE);
     }
 
 }

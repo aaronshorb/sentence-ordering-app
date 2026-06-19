@@ -1,37 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Exercises</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
-<body>
+<body class="exercise-play-body">
+<header class="app-topbar">
+    <span class="app-topbar-spacer" aria-hidden="true"></span>
 
-<form th:action="@{/logout}" method="post">
-    <button type="submit">Logout</button>
-</form>
+    <nav class="topbar-nav" aria-label="Exercise navigation">
+        <a href="/" class="topbar-link">Home</a>
 
-<h1>Exercises</h1>
+        <form th:action="@{/logout}" method="post" class="inline-form" onsubmit="return confirm('Log out?')">
+            <button type="submit" class="topbar-button">Logout</button>
+        </form>
+    </nav>
+</header>
 
-<a href="/">Home</a>
+<main class="student-exercise-page">
+    <section class="exercise-heading">
+        <h1>Exercises</h1>
+        <p>Select a unit to see its readings.</p>
+    </section>
 
-<table border="1">
-    <thead>
-    <tr>
-        <th>Unit</th>
-        <th>Readings</th>
-    </tr>
-    </thead>
+    <section class="unit-list-panel" aria-label="Units">
+        <a class="unit-list-row"
+           th:each="unit : ${units}"
+           th:with="readingCount=${readingCounts.get(unit)}"
+           th:href="@{/student/exercises/units/{unitNumber}(unitNumber=${unit})}">
+            <span class="unit-list-title">
+                Unit <span th:text="${unit}">1</span>
+            </span>
 
-    <tbody>
-    <tr th:each="unit : ${units}">
-        <td th:text="${unit}">1</td>
-        <td>
-            <a th:href="@{/student/exercises/units/{unitNumber}(unitNumber=${unit})}">
-                Open
-            </a>
-        </td>
-    </tr>
-    </tbody>
-</table>
+            <span class="unit-reading-count"
+                  th:text="${readingCount == 1 ? '1 reading' : readingCount + ' readings'}">
+                1 reading
+            </span>
 
+            <span class="unit-row-arrow" aria-hidden="true">›</span>
+        </a>
+    </section>
+</main>
 </body>
 </html>

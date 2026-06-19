@@ -1,43 +1,76 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Student Progress</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
-<body>
-<form th:action="@{/logout}" method="post">
-    <button type="submit">Logout</button>
-</form>
-
-<h1>Students</h1>
-
-<a href="/">Home</a>
-
-<table border="1">
-    <thead>
-    <tr>
-        <th>Student</th>
-        <th th:each="exercise : ${exercises}"
-            th:text="'Reading ' + ${exercise.readingNumber}">
-            Reading
-        </th>
-    </tr>
-    </thead>
-
-    <tbody>
-    <tr th:each="student : ${students}">
-        <td th:text="${student.username}">Student</td>
-        <td th:each="exercise : ${exercises}"
-            th:text="${completedKeys.contains(student.id + '-' + exercise.id) ? 'Completed' : ''}">
-        </td>
-    </tr>
-    </tbody>
-</table>
-
-<p>
-    <a th:href="@{/admin/grades/{grade}/progress(grade=${grade})}">
-        Back to units
+<body class="app-soft-body">
+<header class="app-topbar">
+    <a class="topbar-back-link" th:href="@{/admin/grades/{grade}/progress(grade=${grade})}">
+        Back to Units
     </a>
-</p>
 
+    <nav class="topbar-nav" aria-label="Primary">
+        <a href="/" class="topbar-link">Home</a>
+
+        <form th:action="@{/logout}" method="post" class="inline-form" onsubmit="return confirm('Log out?')">
+            <button type="submit" class="topbar-button">Logout</button>
+        </form>
+    </nav>
+</header>
+
+<main class="content-page progress-page">
+    <section class="content-heading">
+        <p class="eyebrow">
+            Grade <span th:text="${grade}">1</span>
+            · Unit <span th:text="${unitNumber}">1</span>
+        </p>
+        <h1>Student Progress</h1>
+        <p>Review which students have completed each reading.</p>
+    </section>
+
+    <section class="progress-panel" aria-label="Student reading completion">
+        <table class="progress-table progress-matrix-table"
+               th:style="${'--progress-min-width: ' + (72 + (#lists.size(exercises) * 84) + 92) + 'px; --progress-mobile-min-width: ' + (64 + (#lists.size(exercises) * 72) + 80) + 'px;'}">
+            <thead>
+            <tr>
+                <th class="progress-student-heading">
+                    <span class="progress-student-name">Student</span>
+                </th>
+                <th th:each="exercise : ${exercises}"
+                    th:text="'Reading ' + ${exercise.readingNumber}">
+                    Reading
+                </th>
+                <th class="progress-total-heading">Total</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="student : ${students}">
+                <td class="progress-student-cell">
+                    <span class="progress-student-name" th:text="${student.username}">Student</span>
+                </td>
+                <td th:each="exercise : ${exercises}">
+                    <span class="progress-completion-dot"
+                          th:classappend="${completedKeys.contains(student.id + '-' + exercise.id)} ? ' is-complete' : ''"
+                          th:attr="aria-label=${completedKeys.contains(student.id + '-' + exercise.id) ? 'Completed' : 'Not completed'}"
+                          role="img"></span>
+                </td>
+                <td class="progress-total-cell"
+                    th:with="completedCount=${completedCounts.get(student.id)}">
+                    <span class="progress-total-count"
+                          th:text="|${completedCount}/${#lists.size(exercises)}|">
+                        0/10
+                    </span>
+                    <span class="progress-total-bar" aria-hidden="true">
+                        <span class="progress-total-bar-fill"
+                              th:style="${'width: ' + (#lists.isEmpty(exercises) ? 0 : (completedCount * 100 / #lists.size(exercises))) + '%'}"></span>
+                    </span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
 </body>
 </html>

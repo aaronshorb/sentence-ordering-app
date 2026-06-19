@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Access denied</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body class="app-soft-body">
+<header class="app-topbar">
+    <a href="/" class="topbar-back-link">Back to Home</a>
+
+    <nav class="topbar-nav" aria-label="Primary">
+        <form th:action="@{/logout}" method="post" class="inline-form" onsubmit="return confirm('Log out?')">
+            <button type="submit" class="topbar-button">Logout</button>
+        </form>
+    </nav>
+</header>
+
+<main class="content-page form-page error-page">
+    <section class="error-card">
+        <p class="error-code">403</p>
+
+        <div class="content-heading">
+            <h1>Access denied</h1>
+            <p th:text="${message == null or #strings.isEmpty(message) or message == 'Forbidden'} ? 'This page belongs to a different account type.' : ${message}">
+                This page belongs to a different account type.
+            </p>
+        </div>
+
+        <div class="error-actions">
+            <a sec:authorize="hasRole('STUDENT')"
+               href="/student/exercises"
+               class="primary-action-button">
+                Go to Student Exercises
+            </a>
+
+            <a sec:authorize="hasRole('ADMIN')"
+               href="/admin/grades/1/exercises"
+               class="primary-action-button">
+                Go to Admin Panel
+            </a>
+
+            <a href="/" class="outline-action-button">Back to Home</a>
+        </div>
+    </section>
+</main>
+</body>
+</html>

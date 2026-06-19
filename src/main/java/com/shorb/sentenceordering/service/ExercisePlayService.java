@@ -17,23 +17,27 @@ public class ExercisePlayService {
         return shuffledSentences;
     }
 
+    public List<SentenceAnswerFeedback> uncheckedSentenceFeedback(List<ExerciseSentence> sentences) {
+        return sentences.stream()
+                .map(sentence -> new SentenceAnswerFeedback(sentence, null))
+                .toList();
+    }
+
     public ExerciseAnswerResult checkAnswer(
             Exercise exercise,
-            List<Long> sentenceIds,
-            List<Integer> orders
+            List<Long> sentenceIds
     ) {
-        if (sentenceIds.size() != orders.size()) {
+        if (sentenceIds.size() != exercise.getSentences().size()) {
             throw new IllegalArgumentException("Invalid sentence ids size " + sentenceIds.size());
         }
 
-        List<ExerciseSentence> displayedSentences = new ArrayList<>();
-        List<Integer> displayedOrders = new ArrayList<>();
+        List<SentenceAnswerFeedback> displayedSentences = new ArrayList<>();
 
         boolean correct = true;
 
         for (int i = 0; i < sentenceIds.size(); i++) {
             Long sentenceId = sentenceIds.get(i);
-            Integer studentOrder = orders.get(i);
+            int studentOrder = i + 1;
 
             ExerciseSentence sentence = exercise.getSentences()
                     .stream()
@@ -41,24 +45,33 @@ public class ExercisePlayService {
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("Sentence not found: " + sentenceId));
 
-            displayedSentences.add(sentence);
-            displayedOrders.add(studentOrder);
+            boolean correctPosition = sentence.getCorrectOrder() == studentOrder;
 
-            if (sentence.getCorrectOrder() != studentOrder){
+            displayedSentences.add(new SentenceAnswerFeedback(sentence, correctPosition));
+
+            if (!correctPosition){
                 correct = false;
             }
         }
         if (correct) {
-            return new ExerciseAnswerResult(true, exercise.getSentences(), List.of());
+            return new ExerciseAnswerResult(true, exercise.getSentences()
+                    .stream()
+                    .map(sentence -> new SentenceAnswerFeedback(sentence, true))
+                    .toList());
         }
 
-        return new ExerciseAnswerResult(false, displayedSentences, displayedOrders);
+        return new ExerciseAnswerResult(false, displayedSentences);
+    }
+
+    public record SentenceAnswerFeedback(
+            ExerciseSentence sentence,
+            Boolean correctPosition
+    ) {
     }
 
     public record ExerciseAnswerResult(
             boolean correct,
-            List<ExerciseSentence> displayedSentences,
-            List<Integer> displayedOrders
+            List<SentenceAnswerFeedback> displayedSentences
     ) {
     }
 }

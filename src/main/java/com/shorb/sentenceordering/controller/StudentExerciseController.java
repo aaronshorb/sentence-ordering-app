@@ -3,9 +3,9 @@ package com.shorb.sentenceordering.controller;
 import com.shorb.sentenceordering.exception.ResourceNotFoundException;
 import com.shorb.sentenceordering.model.AppUser;
 import com.shorb.sentenceordering.model.Exercise;
+import com.shorb.sentenceordering.model.ExerciseSentence;
 import com.shorb.sentenceordering.repository.AppUserRepository;
 import com.shorb.sentenceordering.repository.ExerciseRepository;
-import com.shorb.sentenceordering.repository.StudentExerciseCompletionRepository;
 import com.shorb.sentenceordering.service.ExercisePlayService;
 import com.shorb.sentenceordering.service.StudentProgressService;
 import org.springframework.stereotype.Controller;
@@ -18,6 +18,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.access.AccessDeniedException;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class StudentExerciseController {
@@ -25,20 +27,17 @@ public class StudentExerciseController {
     private final ExerciseRepository exerciseRepository;
     private final AppUserRepository appUserRepository;
     private final ExercisePlayService exercisePlayService;
-    private final StudentExerciseCompletionRepository completionRepository;
     private final StudentProgressService studentProgressService;
 
     public StudentExerciseController(
             ExerciseRepository exerciseRepository,
             AppUserRepository appUserRepository,
             ExercisePlayService exercisePlayService,
-            StudentExerciseCompletionRepository completionRepository,
             StudentProgressService studentProgressService
     ) {
         this.exerciseRepository = exerciseRepository;
         this.appUserRepository = appUserRepository;
         this.exercisePlayService = exercisePlayService;
-        this.completionRepository = completionRepository;
         this.studentProgressService = studentProgressService;
     }
 
@@ -46,7 +45,16 @@ public class StudentExerciseController {
     public String listUnits(Authentication authentication, Model model) {
         AppUser student = getCurrentUser(authentication);
 
-        model.addAttribute("units", exerciseRepository.findDistinctUnitNumbersByGrade(student.getGrade()));
+        List<Integer> units = exerciseRepository.findDistinctUnitNumbersByGrade(student.getGrade());
+        Map<Integer, Long> readingCounts = exerciseRepository.findByGradeOrderByUnitNumberAscReadingNumberAsc(student.getGrade())
+                .stream()
+                .collect(Collectors.groupingBy(
+                        Exercise::getUnitNumber,
+                        Collectors.counting()
+                ));
+
+        model.addAttribute("units", units);
+        model.addAttribute("readingCounts", readingCounts);
 
         return "student/units";
     }
@@ -77,9 +85,10 @@ public class StudentExerciseController {
 
         checkExerciseAccess(student, exercise);
 
+        List<ExerciseSentence> shuffledSentences = exercisePlayService.shuffledSentences(exercise);
+
         model.addAttribute("exercise", exercise);
-        model.addAttribute("shuffledSentences", exercisePlayService.shuffledSentences(exercise));
-        model.addAttribute("displayedOrders", List.of());
+        model.addAttribute("sentenceFeedback", exercisePlayService.uncheckedSentenceFeedback(shuffledSentences));
         model.addAttribute("backUrl", "/student/exercises/units/" + exercise.getUnitNumber());
         model.addAttribute("playAction", "/student/exercises/" + id + "/play");
 
@@ -90,7 +99,6 @@ public class StudentExerciseController {
     public String checkExercise(
             @PathVariable Long id,
             @RequestParam List<Long> sentenceIds,
-            @RequestParam List<Integer> orders,
             Authentication authentication,
             Model model
     ){
@@ -102,14 +110,16 @@ public class StudentExerciseController {
         checkExerciseAccess(student, exercise);
 
         ExercisePlayService.ExerciseAnswerResult result =
-                exercisePlayService.checkAnswer(exercise, sentenceIds, orders);
+                exercisePlayService.checkAnswer(exercise, sentenceIds);
 
         studentProgressService.markCompletedIfCorrect(student, exercise, result.correct());
 
         model.addAttribute("exercise", exercise);
-        model.addAttribute("shuffledSentences", result.displayedSentences());
-        model.addAttribute("displayedOrders", result.displayedOrders());
-        model.addAttribute("resultMessage", result.correct() ? "Right!" : "Wrong. Try again.");
+        model.addAttribute("sentenceFeedback", result.displayedSentences());
+        model.addAttribute("resultMessage", result.correct()
+                ? "Right! All sentences are in the correct order."
+                : "Some sentences are out of order. Rearrange the highlighted sentences.");
+        model.addAttribute("resultCorrect", result.correct());
         model.addAttribute("backUrl", "/student/exercises/units/" + exercise.getUnitNumber());
         model.addAttribute("playAction", "/student/exercises/" + id + "/play");
 

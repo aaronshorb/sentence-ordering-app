@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Not Found</title>
+    <title>Something went wrong</title>
     <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body class="app-soft-body">
@@ -11,11 +11,11 @@
 
 <main class="content-page form-page error-page">
     <section class="error-card">
-        <p class="error-code">404</p>
+        <p class="error-code">500</p>
 
         <div class="content-heading">
-            <h1>Page not found</h1>
-            <p th:text="${message}">The requested resource was not found.</p>
+            <h1>Something went wrong</h1>
+            <p th:text="${message}">Something went wrong.</p>
         </div>
 
         <div class="error-actions">

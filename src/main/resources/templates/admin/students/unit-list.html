@@ -1,43 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Student Progress by Unit</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
-<body>
-
-<form th:action="@{/logout}" method="post">
-    <button type="submit">Logout</button>
-</form>
-
-<h1>Units</h1>
-
-<a href="/">Home</a>
-
-<table border="1">
-    <thead>
-    <tr>
-        <th>Unit</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    <tr th:each="unit : ${units}">
-        <td th:text="${unit}">1</td>
-        <td>
-            <a th:href="@{/admin/grades/{grade}/progress/units/{unitNumber}(grade=${grade}, unitNumber=${unit})}">
-                View Progress
-            </a>
-        </td>
-    </tr>
-    </tbody>
-</table>
-
-<p>
-    <a th:href="@{/admin/grades/{grade}/exercises(grade=${grade})}">
-        Back to admin panel
+<body class="app-soft-body">
+<header class="app-topbar">
+    <a class="topbar-back-link" th:href="@{/admin/grades/{grade}/exercises(grade=${grade})}">
+        Back to Admin Panel
     </a>
-</p>
 
+    <nav class="topbar-nav" aria-label="Primary">
+        <a href="/" class="topbar-link">Home</a>
+
+        <form th:action="@{/logout}" method="post" class="inline-form" onsubmit="return confirm('Log out?')">
+            <button type="submit" class="topbar-button">Logout</button>
+        </form>
+    </nav>
+</header>
+
+<main class="content-page progress-unit-page">
+    <section class="content-heading">
+        <p class="eyebrow">Grade <span th:text="${grade}">1</span></p>
+        <h1>Student Progress by Unit</h1>
+        <p>Select a unit to view student completion progress.</p>
+    </section>
+
+    <section class="unit-list-panel" aria-label="Units with student progress">
+        <a class="unit-list-row progress-unit-row"
+           th:each="unit : ${units}"
+           th:href="@{/admin/grades/{grade}/progress/units/{unitNumber}(grade=${grade}, unitNumber=${unit})}">
+            <span class="unit-list-title">
+                Unit <span th:text="${unit}">1</span>
+            </span>
+
+            <span class="unit-row-arrow" aria-hidden="true">›</span>
+        </a>
+    </section>
+</main>
 </body>
 </html>

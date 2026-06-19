@@ -4,34 +4,45 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <title>Sentence Ordering App</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
-<body>
+<body class="exercise-play-body">
+<header class="app-topbar">
+    <span class="app-topbar-spacer" aria-hidden="true"></span>
 
-<form sec:authorize="!isAuthenticated()" action="/login" method="get">
-    <button type="submit">Login</button>
-</form>
+    <nav class="topbar-nav" aria-label="Primary">
+        <form sec:authorize="!isAuthenticated()" action="/login" method="get" class="inline-form">
+            <button type="submit" class="topbar-button">Login</button>
+        </form>
 
-<form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post">
-    <button type="submit">Logout</button>
-</form>
+        <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="inline-form" onsubmit="return confirm('Log out?')">
+            <button type="submit" class="topbar-button">Logout</button>
+        </form>
+    </nav>
+</header>
 
-<h1>Sentence Ordering App</h1>
+<main class="student-exercise-page">
+    <section class="exercise-heading home-heading">
+        <h1>Sentence Ordering</h1>
+    </section>
 
-<div sec:authorize="hasRole('STUDENT')">
-    <h2>Student</h2>
-    <form action="/student/exercises" method="get">
-        <button type="submit">Student Exercises</button>
-    </form>
-</div>
+    <section class="home-action-panel" aria-label="Home actions">
+        <a sec:authorize="hasRole('STUDENT')" href="/student/exercises" class="home-action-row">
+            <span class="home-action-main">
+                <span class="home-action-title">Student Exercises</span>
+                <span class="home-action-description">Choose a unit and start practicing.</span>
+            </span>
+            <span class="unit-row-arrow" aria-hidden="true">›</span>
+        </a>
 
-<div sec:authorize="hasRole('ADMIN')">
-    <h2>Admin</h2>
-    <ul>
-        <li><a href="/admin/grades/1/exercises">Manage Grade 1</a></li>
-        <li><a href="/admin/grades/2/exercises">Manage Grade 2</a></li>
-        <li><a href="/admin/grades/3/exercises">Manage Grade 3</a></li>
-    </ul>
-</div>
-
+        <a sec:authorize="hasRole('ADMIN')" href="/admin/grades/1/exercises" class="home-action-row">
+            <span class="home-action-main">
+                <span class="home-action-title">Open Admin Panel</span>
+                <span class="home-action-description">Manage exercises and view student progress.</span>
+            </span>
+            <span class="unit-row-arrow" aria-hidden="true">›</span>
+        </a>
+    </section>
+</main>
 </body>
 </html>

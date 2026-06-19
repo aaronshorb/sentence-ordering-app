@@ -26,6 +26,11 @@ public class StudentProgressService {
     }
 
     @Transactional
+    public void resetGradeUnitCompletions(int grade, int unitNumber) {
+        studentExerciseCompletionRepository.deleteByStudentGradeAndExerciseUnitNumber(grade, unitNumber);
+    }
+
+    @Transactional
     public void resetStudentCompletions(AppUser student, int unitNumber) {
         studentExerciseCompletionRepository.deleteByStudentAndExerciseUnitNumber(student, unitNumber);
     }
