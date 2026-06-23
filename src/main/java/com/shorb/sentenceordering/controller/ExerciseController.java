@@ -5,9 +5,11 @@ import com.shorb.sentenceordering.form.ExerciseForm;
 import com.shorb.sentenceordering.model.Exercise;
 import com.shorb.sentenceordering.model.ExerciseSentence;
 import com.shorb.sentenceordering.repository.ExerciseRepository;
+import com.shorb.sentenceordering.repository.StudentExerciseCompletionRepository;
 import com.shorb.sentenceordering.service.ExercisePlayService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -21,13 +23,16 @@ public class ExerciseController {
             "An exercise for this unit and reading already exists.";
 
     private final ExerciseRepository exerciseRepository;
+    private final StudentExerciseCompletionRepository studentExerciseCompletionRepository;
     private final ExercisePlayService exercisePlayService;
 
     public ExerciseController(
             ExerciseRepository exerciseRepository,
+            StudentExerciseCompletionRepository studentExerciseCompletionRepository,
             ExercisePlayService exercisePlayService
     ) {
         this.exerciseRepository = exerciseRepository;
+        this.studentExerciseCompletionRepository = studentExerciseCompletionRepository;
         this.exercisePlayService = exercisePlayService;
     }
 
@@ -175,12 +180,14 @@ public class ExerciseController {
     }
 
     @PostMapping("/admin/exercises/{id}/delete")
+    @Transactional
     public String deleteExercise(@PathVariable("id") long id) {
         Exercise exercise = exerciseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Exercise not found: " + id));
         int grade = exercise.getGrade();
         int unitNumber = exercise.getUnitNumber();
 
+        studentExerciseCompletionRepository.deleteByExercise(exercise);
         exerciseRepository.delete(exercise);
         return "redirect:/admin/grades/" + grade + "/exercises?unitNumber=" + unitNumber;
     }

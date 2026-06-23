@@ -11,6 +11,7 @@ public interface StudentExerciseCompletionRepository extends JpaRepository<Stude
     boolean existsByStudentAndExercise(AppUser student, Exercise exercise);
     List<StudentExerciseCompletion> findByStudent(AppUser student);
     List<StudentExerciseCompletion> findByStudentInAndExerciseIn(List<AppUser> students, List<Exercise> exercises);
+    void deleteByExercise(Exercise exercise);
     void deleteByStudentGrade(Integer grade);
     void deleteByStudentGradeAndExerciseUnitNumber(Integer grade, int unitNumber);
     void deleteByStudentAndExerciseUnitNumber(AppUser student, int unitNumber);
