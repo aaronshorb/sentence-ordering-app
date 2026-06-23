@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ExercisePlayService {
@@ -27,9 +29,14 @@ public class ExercisePlayService {
             Exercise exercise,
             List<Long> sentenceIds
     ) {
-        if (sentenceIds.size() != exercise.getSentences().size()) {
+        List<ExerciseSentence> sentences = exercise.getSentences();
+
+        if (sentenceIds.size() != sentences.size()) {
             throw new IllegalArgumentException("Invalid sentence ids size " + sentenceIds.size());
         }
+
+        Map<Long, ExerciseSentence> sentencesById = sentences.stream()
+                .collect(Collectors.toMap(ExerciseSentence::getId, sentence -> sentence));
 
         List<SentenceAnswerFeedback> displayedSentences = new ArrayList<>();
 
@@ -39,11 +46,11 @@ public class ExercisePlayService {
             Long sentenceId = sentenceIds.get(i);
             int studentOrder = i + 1;
 
-            ExerciseSentence sentence = exercise.getSentences()
-                    .stream()
-                    .filter(s -> s.getId().equals(sentenceId))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("Sentence not found: " + sentenceId));
+            ExerciseSentence sentence = sentencesById.get(sentenceId);
+
+            if (sentence == null) {
+                throw new IllegalArgumentException("Sentence not found: " + sentenceId);
+            }
 
             boolean correctPosition = sentence.getCorrectOrder() == studentOrder;
 
@@ -54,7 +61,7 @@ public class ExercisePlayService {
             }
         }
         if (correct) {
-            return new ExerciseAnswerResult(true, exercise.getSentences()
+            return new ExerciseAnswerResult(true, sentences
                     .stream()
                     .map(sentence -> new SentenceAnswerFeedback(sentence, true))
                     .toList());
