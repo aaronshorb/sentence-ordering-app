@@ -56,7 +56,7 @@ class StudentExerciseControllerTest {
 
         when(authentication.getName()).thenReturn("aaron");
         when(appUserRepository.findByUsername("aaron")).thenReturn(Optional.of(student));
-        when(exerciseRepository.findById(1L)).thenReturn(Optional.of(exercise));
+        when(exerciseRepository.findWithSentencesById(1L)).thenReturn(Optional.of(exercise));
         when(exercisePlayService.shuffledSentences(exercise)).thenReturn(List.of());
 
         String viewName = controller.playExercise(1L, authentication, model);
@@ -76,7 +76,7 @@ class StudentExerciseControllerTest {
 
         when(authentication.getName()).thenReturn("aaron");
         when(appUserRepository.findByUsername("aaron")).thenReturn(Optional.of(student));
-        when(exerciseRepository.findById(1L)).thenReturn(Optional.of(exercise));
+        when(exerciseRepository.findWithSentencesById(1L)).thenReturn(Optional.of(exercise));
 
         assertThatThrownBy(() -> controller.playExercise(1L, authentication, model))
                 .isInstanceOf(AccessDeniedException.class)
@@ -97,7 +97,7 @@ class StudentExerciseControllerTest {
 
         when(authentication.getName()).thenReturn("aaron");
         when(appUserRepository.findByUsername("aaron")).thenReturn(Optional.of(student));
-        when(exerciseRepository.findById(1L)).thenReturn(Optional.of(exercise));
+        when(exerciseRepository.findWithSentencesById(1L)).thenReturn(Optional.of(exercise));
 
         assertThatThrownBy(() -> controller.playExercise(1L, authentication, model))
                 .isInstanceOf(AccessDeniedException.class)
@@ -118,7 +118,7 @@ class StudentExerciseControllerTest {
 
         when(authentication.getName()).thenReturn("aaron");
         when(appUserRepository.findByUsername("aaron")).thenReturn(Optional.of(admin));
-        when(exerciseRepository.findById(1L)).thenReturn(Optional.of(exercise));
+        when(exerciseRepository.findWithSentencesById(1L)).thenReturn(Optional.of(exercise));
         when(exercisePlayService.shuffledSentences(exercise)).thenReturn(List.of());
 
         String viewName = controller.playExercise(1L, authentication, model);
@@ -146,7 +146,7 @@ class StudentExerciseControllerTest {
 
         when(authentication.getName()).thenReturn("aaron");
         when(appUserRepository.findByUsername("aaron")).thenReturn(Optional.of(student));
-        when(exerciseRepository.findById(1L)).thenReturn(Optional.of(exercise));
+        when(exerciseRepository.findWithSentencesById(1L)).thenReturn(Optional.of(exercise));
         when(exercisePlayService.checkAnswer(exercise, sentenceIds)).thenReturn(result);
 
         controller.checkExercise(
@@ -179,7 +179,7 @@ class StudentExerciseControllerTest {
 
         when(authentication.getName()).thenReturn("aaron");
         when(appUserRepository.findByUsername("aaron")).thenReturn(Optional.of(student));
-        when(exerciseRepository.findById(1L)).thenReturn(Optional.of(exercise));
+        when(exerciseRepository.findWithSentencesById(1L)).thenReturn(Optional.of(exercise));
         when(exercisePlayService.checkAnswer(exercise, sentenceIds)).thenReturn(result);
 
         controller.checkExercise(

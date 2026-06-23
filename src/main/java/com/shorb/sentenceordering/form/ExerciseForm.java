@@ -3,6 +3,7 @@ package com.shorb.sentenceordering.form;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 public class ExerciseForm {
 
@@ -26,6 +27,10 @@ public class ExerciseForm {
     @NotBlank
     private String readingText;
 
+    @Pattern(
+            regexp = "^$|https?://\\S+$",
+            message = "Audio link must be a valid HTTP/HTTPS URL"
+    )
     private String audioLink;
 
 
@@ -85,4 +90,3 @@ public class ExerciseForm {
         this.audioLink = audioLink;
     }
 }
-

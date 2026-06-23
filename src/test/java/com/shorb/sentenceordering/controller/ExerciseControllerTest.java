@@ -77,7 +77,7 @@ public class ExerciseControllerTest {
         exerciseForm.setReadingText(" First  \n\nSecond ");
 
         when(bindingResult.hasErrors()).thenReturn(false);
-        when(exerciseRepository.findById(1L)).thenReturn(Optional.of(existingExercise));
+        when(exerciseRepository.findWithSentencesById(1L)).thenReturn(Optional.of(existingExercise));
 
         String viewName = controller.updateExercise(1L, exerciseForm, bindingResult, model);
 
@@ -108,7 +108,6 @@ public class ExerciseControllerTest {
         verify(exerciseRepository).delete(existingExercise);
     }
 }
-
 
 
 

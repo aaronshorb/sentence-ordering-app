@@ -104,7 +104,7 @@ public class ExerciseController {
 
     @GetMapping("/admin/exercises/{id}/play")
     public String previewExercise(@PathVariable Long id, Model model) {
-        Exercise exercise = exerciseRepository.findById(id)
+        Exercise exercise = exerciseRepository.findWithSentencesById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Exercise not found: " + id));
         List<ExerciseSentence> shuffledSentences = exercisePlayService.shuffledSentences(exercise);
 
@@ -122,7 +122,7 @@ public class ExerciseController {
             @RequestParam List<Long> sentenceIds,
             Model model
     ) {
-        Exercise exercise = exerciseRepository.findById(id)
+        Exercise exercise = exerciseRepository.findWithSentencesById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Exercise not found: " + id));
         ExercisePlayService.ExerciseAnswerResult result =
                 exercisePlayService.checkAnswer(exercise, sentenceIds);
@@ -141,7 +141,7 @@ public class ExerciseController {
 
     @GetMapping("/admin/exercises/{id}/edit")
     public String showEditExerciseForm(@PathVariable Long id, Model model) {
-        Exercise exercise = exerciseRepository.findById(id)
+        Exercise exercise = exerciseRepository.findWithSentencesById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Exercise not found: " + id));
 
         ExerciseForm exerciseForm = createFormFromExercise(exercise);
@@ -172,7 +172,7 @@ public class ExerciseController {
             return "admin/exercises/edit";
         }
 
-        Exercise exercise = exerciseRepository.findById(id)
+        Exercise exercise = exerciseRepository.findWithSentencesById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Exercise not found: " + id));
         updateExerciseFromForm(exerciseForm, exercise);
         exerciseRepository.save(exercise);

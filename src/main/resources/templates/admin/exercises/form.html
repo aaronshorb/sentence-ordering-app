@@ -63,6 +63,11 @@
             <div class="field-group">
                 <label for="audioLink">Audio Link</label>
                 <input id="audioLink" type="text" th:field="*{audioLink}">
+                <p class="field-error"
+                   th:if="${#fields.hasErrors('audioLink')}"
+                   th:errors="*{audioLink}">
+                    Audio link error
+                </p>
             </div>
         </div>
 

@@ -79,7 +79,7 @@ public class StudentExerciseController {
 
     @GetMapping("/student/exercises/{id}/play")
     public String playExercise(@PathVariable Long id, Authentication authentication, Model model) {
-        Exercise exercise = exerciseRepository.findById(id)
+        Exercise exercise = exerciseRepository.findWithSentencesById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Exercise not found: " + id));
         AppUser student = getCurrentUser(authentication);
 
@@ -104,7 +104,7 @@ public class StudentExerciseController {
     ){
         AppUser student = getCurrentUser(authentication);
 
-        Exercise exercise = exerciseRepository.findById(id)
+        Exercise exercise = exerciseRepository.findWithSentencesById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Exercise not found: " + id));
 
         checkExerciseAccess(student, exercise);
