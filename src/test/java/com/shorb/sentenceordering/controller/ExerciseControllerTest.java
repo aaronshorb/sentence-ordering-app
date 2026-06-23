@@ -4,6 +4,7 @@ import com.shorb.sentenceordering.form.ExerciseForm;
 import com.shorb.sentenceordering.model.Exercise;
 import com.shorb.sentenceordering.model.ExerciseSentence;
 import com.shorb.sentenceordering.repository.ExerciseRepository;
+import com.shorb.sentenceordering.repository.StudentExerciseCompletionRepository;
 import com.shorb.sentenceordering.service.ExercisePlayService;
 
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,8 @@ import static org.mockito.Mockito.*;
 public class ExerciseControllerTest {
     @Mock
     private ExerciseRepository exerciseRepository;
+    @Mock
+    private StudentExerciseCompletionRepository studentExerciseCompletionRepository;
     @Mock
     private ExercisePlayService exercisePlayService;
     @Mock
@@ -105,10 +108,10 @@ public class ExerciseControllerTest {
 
         assertThat(viewName).isEqualTo("redirect:/admin/grades/1/exercises?unitNumber=2");
 
+        verify(studentExerciseCompletionRepository).deleteByExercise(existingExercise);
         verify(exerciseRepository).delete(existingExercise);
     }
 }
-
 
 
 
