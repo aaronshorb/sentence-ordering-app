@@ -12,15 +12,12 @@
     <nav class="topbar-nav" aria-label="Primary">
         <a href="/" class="topbar-link">Home</a>
 
-        <form th:action="@{/logout}" method="post" class="inline-form" onsubmit="return confirm('Log out?')">
-            <button type="submit" class="topbar-button">Logout</button>
-        </form>
+        <div th:replace="~{fragments/account-menu :: accountMenu}"></div>
     </nav>
 </header>
 
 <main class="content-page admin-panel-page">
     <section class="content-heading">
-        <p class="eyebrow">Admin</p>
         <h1>Exercises</h1>
         <p>Preview, edit, delete, and add exercises.</p>
     </section>
@@ -42,23 +39,47 @@
             3rd Grade
         </a>
 
-        <details class="action-menu">
-            <summary class="menu-button" aria-label="Grade actions">
-                <span aria-hidden="true">···</span>
-            </summary>
+        <a class="grade-tabs-secondary-action"
+           th:if="${selectedUnit == null}"
+           th:href="@{/admin/grades/{grade}/progress(grade=${grade})}"
+           th:with="gradeLabel=${grade == 1 ? '1st' : (grade == 2 ? '2nd' : '3rd')}"
+           th:text="|View ${gradeLabel} grade progress|">
+            View 1st grade progress
+        </a>
 
-            <div class="action-menu-list">
-                <form th:action="@{/admin/grades/{grade}/progress/reset(grade=${grade})}"
-                      method="post"
-                      class="action-menu-form">
-                    <button type="submit"
-                            class="action-menu-item is-danger"
-                            onclick="return confirm('Reset all student progress for this grade?')">
-                        Reset all grade progress
-                    </button>
-                </form>
-            </div>
-        </details>
+        <a class="grade-tabs-secondary-action"
+           th:if="${selectedUnit != null}"
+           th:href="@{/admin/grades/{grade}/progress/units/{unitNumber}(grade=${grade}, unitNumber=${selectedUnit})}"
+           th:text="|View Unit ${selectedUnit} progress|">
+            View Unit 1 progress
+        </a>
+
+        <form th:action="@{/admin/grades/{grade}/progress/reset(grade=${grade})}"
+              th:if="${selectedUnit == null}"
+              method="post"
+              class="grade-tabs-action-form"
+              th:with="gradeLabel=${grade == 1 ? '1st' : (grade == 2 ? '2nd' : '3rd')}">
+            <button type="submit"
+                    class="grade-reset-button"
+                    th:attr="data-confirm=|Reset all student progress for ${gradeLabel} grade?|"
+                    onclick="return confirm(this.dataset.confirm)"
+                    th:text="|Reset ${gradeLabel} grade progress|">
+                Reset 1st grade progress
+            </button>
+        </form>
+
+        <form th:action="@{/admin/grades/{grade}/progress/units/{unitNumber}/reset(grade=${grade}, unitNumber=${selectedUnit})}"
+              th:if="${selectedUnit != null}"
+              method="post"
+              class="grade-tabs-action-form">
+            <button type="submit"
+                    class="grade-reset-button"
+                    th:attr="data-confirm=|Reset student progress for Unit ${selectedUnit}?|"
+                    onclick="return confirm(this.dataset.confirm)"
+                    th:text="|Reset Unit ${selectedUnit} progress|">
+                Reset Unit 1 progress
+            </button>
+        </form>
     </nav>
 
     <div class="admin-panel-layout">
@@ -100,36 +121,6 @@
                         + Add Exercise
                     </a>
 
-                    <details class="action-menu">
-                        <summary class="menu-button" aria-label="Unit actions">
-                            <span aria-hidden="true">···</span>
-                        </summary>
-
-                        <div class="action-menu-list">
-                            <a class="action-menu-item"
-                               th:if="${selectedUnit == null}"
-                               th:href="@{/admin/grades/{grade}/progress(grade=${grade})}">
-                                View student progress
-                            </a>
-
-                            <a class="action-menu-item"
-                               th:if="${selectedUnit != null}"
-                               th:href="@{/admin/grades/{grade}/progress/units/{unitNumber}(grade=${grade}, unitNumber=${selectedUnit})}">
-                                View student progress
-                            </a>
-
-                            <form th:action="@{/admin/grades/{grade}/progress/units/{unitNumber}/reset(grade=${grade}, unitNumber=${selectedUnit})}"
-                                  th:if="${selectedUnit != null}"
-                                  method="post"
-                                  class="action-menu-form">
-                                <button type="submit"
-                                        class="action-menu-item is-danger"
-                                        onclick="return confirm('Reset student progress for this unit?')">
-                                    Reset unit progress
-                                </button>
-                            </form>
-                        </div>
-                    </details>
                 </div>
             </header>
 
@@ -157,11 +148,19 @@
                     <div class="admin-reading-actions">
                         <a class="outline-action-button"
                            th:href="@{/admin/exercises/{id}/play(id=${exercise.id})}">
+                            <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path>
+                                <circle cx="12" cy="12" r="2.5"></circle>
+                            </svg>
                             Preview
                         </a>
 
                         <a class="outline-action-button"
                            th:href="@{/admin/exercises/{id}/edit(id=${exercise.id})}">
+                            <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17z"></path>
+                                <path d="m14 8 2 2"></path>
+                            </svg>
                             Edit
                         </a>
 
@@ -171,6 +170,13 @@
                             <button type="submit"
                                     class="outline-action-button is-danger"
                                     onclick="return confirm('Delete this exercise?')">
+                                <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                    <path d="M4 7h16"></path>
+                                    <path d="M9 7V5h6v2"></path>
+                                    <path d="m7 7 1 13h8l1-13"></path>
+                                    <path d="M10 11v5"></path>
+                                    <path d="M14 11v5"></path>
+                                </svg>
                                 Delete
                             </button>
                         </form>
@@ -180,6 +186,5 @@
         </section>
     </div>
 </main>
-<script th:src="@{/js/action-menu.js}"></script>
 </body>
 </html>

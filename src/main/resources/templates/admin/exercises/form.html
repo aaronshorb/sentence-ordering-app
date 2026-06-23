@@ -15,15 +15,13 @@
     <nav class="topbar-nav" aria-label="Primary">
         <a href="/" class="topbar-link">Home</a>
 
-        <form th:action="@{/logout}" method="post" class="inline-form" onsubmit="return confirm('Log out?')">
-            <button type="submit" class="topbar-button">Logout</button>
-        </form>
+        <div th:replace="~{fragments/account-menu :: accountMenu}"></div>
     </nav>
 </header>
 
 <main class="content-page form-page">
     <section class="content-heading">
-        <p class="eyebrow">Grade <span th:text="${grade}">1</span></p>
+        <p class="heading-meta">Grade <span th:text="${grade}">1</span></p>
         <h1>New Exercise</h1>
         <p>Create a reading by entering one sentence per line.</p>
     </section>

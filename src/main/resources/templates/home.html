@@ -16,9 +16,7 @@
             <button type="submit" class="topbar-button">Login</button>
         </form>
 
-        <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="inline-form" onsubmit="return confirm('Log out?')">
-            <button type="submit" class="topbar-button">Logout</button>
-        </form>
+        <div th:replace="~{fragments/account-menu :: accountMenu}"></div>
     </nav>
 </header>
 

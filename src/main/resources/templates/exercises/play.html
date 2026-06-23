@@ -14,17 +14,15 @@
     <nav class="topbar-nav" aria-label="Exercise navigation">
         <a href="/" class="topbar-link">Home</a>
 
-        <form th:action="@{/logout}" method="post" class="inline-form" onsubmit="return confirm('Log out?')">
-            <button type="submit" class="topbar-button">Logout</button>
-        </form>
+        <div th:replace="~{fragments/account-menu :: accountMenu}"></div>
     </nav>
 </header>
 
 <main class="exercise-player">
     <section class="exercise-heading">
-        <p class="eyebrow">
+        <p class="heading-meta">
             Unit <span th:text="${exercise.unitNumber}">1</span>
-            / Reading <span th:text="${exercise.readingNumber}">1</span>
+            · Reading <span th:text="${exercise.readingNumber}">1</span>
         </p>
         <h1 th:text="${exercise.title}">Exercise Title</h1>
     </section>

@@ -12,9 +12,7 @@
     <a href="/" class="topbar-back-link">Back to Home</a>
 
     <nav class="topbar-nav" aria-label="Primary">
-        <form th:action="@{/logout}" method="post" class="inline-form" onsubmit="return confirm('Log out?')">
-            <button type="submit" class="topbar-button">Logout</button>
-        </form>
+        <div th:replace="~{fragments/account-menu :: accountMenu}"></div>
     </nav>
 </header>
 

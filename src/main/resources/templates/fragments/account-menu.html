@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<details th:fragment="accountMenu" sec:authorize="isAuthenticated()" class="action-menu account-menu">
+    <summary class="topbar-button account-menu-button" aria-label="Account menu">
+        <span sec:authorize="hasRole('ADMIN')" class="account-menu-label">Admin</span>
+        <span sec:authorize="hasRole('STUDENT')" class="account-menu-label" sec:authentication="name">Student</span>
+        <span class="account-menu-caret" aria-hidden="true"></span>
+    </summary>
+
+    <div class="action-menu-list account-menu-list">
+        <form th:action="@{/logout}" method="post" class="action-menu-form" onsubmit="return confirm('Log out?')">
+            <button type="submit" class="action-menu-item">Logout</button>
+        </form>
+    </div>
+</details>
+</body>
+</html>

@@ -14,15 +14,13 @@
     <nav class="topbar-nav" aria-label="Exercise navigation">
         <a href="/" class="topbar-link">Home</a>
 
-        <form th:action="@{/logout}" method="post" class="inline-form" onsubmit="return confirm('Log out?')">
-            <button type="submit" class="topbar-button">Logout</button>
-        </form>
+        <div th:replace="~{fragments/account-menu :: accountMenu}"></div>
     </nav>
 </header>
 
 <main class="student-exercise-page">
     <section class="exercise-heading">
-        <p class="eyebrow">Unit <span th:text="${unitNumber}">1</span></p>
+        <p class="heading-meta">Unit <span th:text="${unitNumber}">1</span></p>
         <h1>Readings</h1>
         <p>Choose a reading to start the ordering exercise.</p>
     </section>
