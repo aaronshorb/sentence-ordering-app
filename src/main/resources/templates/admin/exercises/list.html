@@ -40,7 +40,7 @@
         </a>
 
         <a class="grade-tabs-secondary-action"
-           th:if="${selectedUnit == null}"
+           th:if="${selectedUnit == null or #lists.isEmpty(units)}"
            th:href="@{/admin/grades/{grade}/progress(grade=${grade})}"
            th:with="gradeLabel=${grade == 1 ? '1st' : (grade == 2 ? '2nd' : '3rd')}"
            th:text="|View ${gradeLabel} grade progress|">
@@ -48,14 +48,14 @@
         </a>
 
         <a class="grade-tabs-secondary-action"
-           th:if="${selectedUnit != null}"
+           th:if="${selectedUnit != null and !#lists.isEmpty(units)}"
            th:href="@{/admin/grades/{grade}/progress/units/{unitNumber}(grade=${grade}, unitNumber=${selectedUnit})}"
            th:text="|View Unit ${selectedUnit} progress|">
             View Unit 1 progress
         </a>
 
         <form th:action="@{/admin/grades/{grade}/progress/reset(grade=${grade})}"
-              th:if="${selectedUnit == null}"
+              th:if="${selectedUnit == null or #lists.isEmpty(units)}"
               method="post"
               class="grade-tabs-action-form"
               th:with="gradeLabel=${grade == 1 ? '1st' : (grade == 2 ? '2nd' : '3rd')}">
@@ -69,7 +69,7 @@
         </form>
 
         <form th:action="@{/admin/grades/{grade}/progress/units/{unitNumber}/reset(grade=${grade}, unitNumber=${selectedUnit})}"
-              th:if="${selectedUnit != null}"
+              th:if="${selectedUnit != null and !#lists.isEmpty(units)}"
               method="post"
               class="grade-tabs-action-form">
             <button type="submit"
@@ -97,7 +97,7 @@
         <section class="reading-panel">
             <header class="reading-panel-header">
                 <div class="reading-panel-title-group">
-                    <h2 th:if="${selectedUnit != null}">
+                    <h2 th:if="${selectedUnit != null and !#lists.isEmpty(units)}">
                         Unit <span th:text="${selectedUnit}">1</span>
                         ·
                         <span th:text="${#lists.size(exercises)}">0</span>
@@ -110,13 +110,13 @@
 
                 <div class="reading-panel-actions">
                     <a class="primary-action-button"
-                       th:if="${selectedUnit != null}"
+                       th:if="${selectedUnit != null and !#lists.isEmpty(units)}"
                        th:href="@{/admin/grades/{grade}/exercises/new(grade=${grade}, unitNumber=${selectedUnit})}">
                         + Add Exercise
                     </a>
 
                     <a class="primary-action-button"
-                       th:if="${selectedUnit == null}"
+                       th:if="${selectedUnit == null or #lists.isEmpty(units)}"
                        th:href="@{/admin/grades/{grade}/exercises/new(grade=${grade})}">
                         + Add Exercise
                     </a>
@@ -128,7 +128,7 @@
                 Select a unit to view its readings.
             </div>
 
-            <div class="reading-panel-empty" th:if="${selectedUnit != null and #lists.isEmpty(exercises)}">
+            <div class="reading-panel-empty" th:if="${selectedUnit != null and !#lists.isEmpty(units) and #lists.isEmpty(exercises)}">
                 No readings have been added for this unit yet.
             </div>
 

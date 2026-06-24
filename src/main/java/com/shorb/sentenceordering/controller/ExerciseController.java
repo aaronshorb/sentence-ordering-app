@@ -71,6 +71,7 @@ public class ExerciseController {
 
         model.addAttribute("exerciseForm", exerciseForm);
         model.addAttribute("grade", grade);
+        model.addAttribute("backUrl", createGradeExerciseListUrl(grade, unitNumber));
 
         return "admin/exercises/form";
     }
@@ -263,6 +264,16 @@ public class ExerciseController {
 
     private void rejectDuplicateExercise(BindingResult bindingResult) {
         bindingResult.reject("duplicateExercise", DUPLICATE_EXERCISE_MESSAGE);
+    }
+
+    private String createGradeExerciseListUrl(int grade, Integer unitNumber) {
+        String url = "/admin/grades/" + grade + "/exercises";
+
+        if (unitNumber != null) {
+            return url + "?unitNumber=" + unitNumber;
+        }
+
+        return url;
     }
 
 }
