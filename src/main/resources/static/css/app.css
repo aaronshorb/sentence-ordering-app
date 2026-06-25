@@ -187,6 +187,7 @@ a:hover { text-decoration: underline; }
     max-width: 16ch;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 1.25;
 }
 
 .account-menu-button::-webkit-details-marker { display: none; }
