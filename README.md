@@ -30,8 +30,7 @@ Students log in to view the exercise units available for their grade, with each 
 <img 
     src="docs/screenshots/student-play.png" 
     alt="Student play" 
-    width="700"
->
+    width="700">
 
 ### Admin View
 
@@ -40,20 +39,17 @@ Teachers log in to an admin dashboard where they can add, edit, delete, and prev
 <img 
     src="docs/screenshots/admin-dashboard.png" 
     alt="Admin dashboard" 
-    width="700"
->
+    width="700">
 
 <img
     src="docs/screenshots/admin-edit-exercise.png"
     alt="Edit exercise"
-    width="700"
->
+    width="700">
 
 <img
     src="docs/screenshots/admin-progress-screen.png"
     alt="Student progress"
-    width="700"
->
+    width="700">
 
 ## Features
 
