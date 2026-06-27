@@ -14,9 +14,9 @@ The demo uses a seeded database that resets daily at 1:00 PM UTC, so feel free t
 
 ### Demo Accounts
 
-| Role | Username | Password |
-| --- | --- | --- |
-| Admin | `admin` | `demo_admin` |
+| Role            | Username              | Password       |
+|-----------------|-----------------------|----------------|
+| Admin           | `admin`               | `demo_admin`   |
 | Grade 1 student | `g1s1` through `g1s5` | `demo_student` |
 | Grade 2 student | `g2s1` through `g2s5` | `demo_student` |
 | Grade 3 student | `g3s1` through `g3s5` | `demo_student` |
