@@ -39,6 +39,14 @@ public class AdminStudentProgressController {
         return "admin/students/unit-list";
     }
 
+    /**
+     * Builds the admin progress table for one grade and unit.
+     *
+     * @param grade grade whose students are shown
+     * @param unitNumber unit whose exercises are shown
+     * @param model page model populated with students, exercises, completions, and totals
+     * @return admin unit progress view
+     */
     @GetMapping("/admin/grades/{grade}/progress/units/{unitNumber}")
     public String showUnitProgress(
             @PathVariable int grade,

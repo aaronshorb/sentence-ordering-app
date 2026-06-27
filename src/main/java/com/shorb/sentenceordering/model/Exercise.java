@@ -8,6 +8,9 @@ import jakarta.validation.constraints.Max;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Models one reading exercise assigned to a specific grade, unit, and reading number.
+ */
 @Entity
 @Table(
         uniqueConstraints = {

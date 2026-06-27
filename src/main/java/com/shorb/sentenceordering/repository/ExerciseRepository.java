@@ -15,9 +15,15 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
     boolean existsByGradeAndUnitNumberAndReadingNumber(int grade, int unitNumber, int readingNumber);
     boolean existsByGradeAndUnitNumberAndReadingNumberAndIdNot(int grade, int unitNumber, int readingNumber, Long id);
 
+    /**
+     * Loads an exercise with its sentences for play and edit screens.
+     */
     @EntityGraph(attributePaths = "sentences")
     Optional<Exercise> findWithSentencesById(Long id);
 
+    /**
+     * Finds unit numbers that have exercises for the selected grade.
+     */
     @Query("select distinct e.unitNumber from Exercise e where e.grade = :grade order by e.unitNumber")
     List<Integer> findDistinctUnitNumbersByGrade(@Param("grade") int grade);
 }

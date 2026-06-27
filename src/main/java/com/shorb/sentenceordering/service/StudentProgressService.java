@@ -35,6 +35,13 @@ public class StudentProgressService {
         studentExerciseCompletionRepository.deleteByStudentAndExerciseUnitNumber(student, unitNumber);
     }
 
+    /**
+     * Saves a completion record when a student answers correctly.
+     *
+     * @param student student who submitted the exercise
+     * @param exercise exercise that was submitted
+     * @param correct whether the answer was correct
+     */
     @Transactional
     public void markCompletedIfCorrect(AppUser student, Exercise exercise, boolean correct) {
         if (correct && !studentExerciseCompletionRepository.existsByStudentAndExercise(student, exercise)) {
@@ -47,6 +54,12 @@ public class StudentProgressService {
         }
     }
 
+    /**
+     * Gets completed exercise IDs for showing a student's completed readings.
+     *
+     * @param student student whose completions should be loaded
+     * @return IDs of exercises the student has completed
+     */
     public List<Long> getCompletedExerciseIdsByStudent(AppUser student) {
         return studentExerciseCompletionRepository.findByStudent(student)
                 .stream()
@@ -55,6 +68,13 @@ public class StudentProgressService {
     }
 
 
+    /**
+     * Builds the lookup keys for the admin's student progress table.
+     *
+     * @param students students shown in the progress table
+     * @param exercises exercises shown in the progress table
+     * @return keys in "studentId-exerciseId" format for completed exercises
+     */
     public Set<String> getCompletedExerciseKeys(List<AppUser> students, List<Exercise> exercises) {
         return studentExerciseCompletionRepository.findByStudentInAndExerciseIn(students, exercises)
                 .stream()

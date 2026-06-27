@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
     storeFixedSentenceSlots(list);
     updateSentenceNumbers(list);
 
+    // Keeps correct rows in place while the user reorders the rest.
     const hasFixedSentenceSlots = list.querySelector(".sentence-row.is-fixed") !== null;
     let fixedSlotRestoreFrame = null;
     const refreshSentenceOrder = () => {
@@ -73,6 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setupAudioPlayers();
 });
 
+// Updates the visible row numbers after sorting.
 function updateSentenceNumbers(list) {
     list.querySelectorAll(".sentence-row").forEach((row, index) => {
         const number = row.querySelector(".sentence-number");
@@ -119,6 +121,7 @@ function storeFixedSentenceSlots(list) {
     });
 }
 
+// Moves fixed rows back to their saved positions.
 function restoreFixedSentenceSlots(list) {
     const rows = Array.from(list.querySelectorAll(".sentence-row"));
     const fixedRows = rows
@@ -164,6 +167,7 @@ function clearFixedSentenceMotion(list) {
     });
 }
 
+// Connects the custom controls to the audio player.
 function setupAudioPlayers() {
     document.querySelectorAll(".audio-strip").forEach((player) => {
         const audio = player.querySelector("[data-audio-player]");

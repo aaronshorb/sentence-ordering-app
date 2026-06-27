@@ -3,6 +3,9 @@ package com.shorb.sentenceordering.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
+/**
+ * Models one sentence and its correct position within an exercise.
+ */
 @Entity
 public class ExerciseSentence{
     @Id

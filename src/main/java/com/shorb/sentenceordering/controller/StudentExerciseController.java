@@ -41,6 +41,13 @@ public class StudentExerciseController {
         this.studentProgressService = studentProgressService;
     }
 
+    /**
+     * Shows exercise units available for the logged-in student's grade.
+     *
+     * @param authentication logged-in Spring Security user
+     * @param model page model populated with units and reading counts
+     * @return student units view
+     */
     @GetMapping("/student/exercises")
     public String listUnits(Authentication authentication, Model model) {
         AppUser student = getCurrentUser(authentication);
@@ -95,6 +102,15 @@ public class StudentExerciseController {
         return "exercises/play";
     }
 
+    /**
+     * Checks a submitted exercise order and saves completion progress when correct.
+     *
+     * @param id exercise ID being submitted
+     * @param sentenceIds sentence IDs in the order submitted by the student
+     * @param authentication logged-in Spring Security user
+     * @param model page model populated with answer feedback
+     * @return exercise play view with result state
+     */
     @PostMapping("/student/exercises/{id}/play")
     public String checkExercise(
             @PathVariable Long id,
@@ -135,11 +151,23 @@ public class StudentExerciseController {
         return "redirect:/student/exercises/units/" + unitNumber;
     }
 
+    /**
+     * Loads the application user record for the logged-in username.
+     *
+     * @param authentication logged-in Spring Security user
+     * @return matching application user
+     */
     private AppUser getCurrentUser(Authentication authentication) {
         return appUserRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new IllegalArgumentException("User not found: "+ authentication.getName()));
     }
 
+    /**
+     * Allows admins to preview any exercise and limits students to their own grade's exercises.
+     *
+     * @param user current application user
+     * @param exercise exercise being opened or submitted
+     */
     private void checkExerciseAccess(AppUser user, Exercise exercise) {
         if (user.getRole() == AppUser.Role.ADMIN) {
             return;

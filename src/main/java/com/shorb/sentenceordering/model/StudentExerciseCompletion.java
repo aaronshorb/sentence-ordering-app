@@ -2,6 +2,9 @@ package com.shorb.sentenceordering.model;
 
 import jakarta.persistence.*;
 
+/**
+ * Models a completed exercise for one student.
+ */
 @Entity
 @Table(
         uniqueConstraints = {

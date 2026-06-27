@@ -193,6 +193,12 @@ public class ExerciseController {
         return "redirect:/admin/grades/" + grade + "/exercises?unitNumber=" + unitNumber;
     }
 
+    /**
+     * Copies form fields into an exercise and rebuilds its ordered sentence list.
+     *
+     * @param form submitted exercise form
+     * @param exercise exercise entity to create or update
+     */
     private void updateExerciseFromForm(ExerciseForm form, Exercise exercise) {
         exercise.setGrade(form.getGrade());
         exercise.setUnitNumber(form.getUnitNumber());
@@ -220,6 +226,12 @@ public class ExerciseController {
         }
     }
 
+    /**
+     * Converts an existing exercise into form data for the edit screen.
+     *
+     * @param exercise exercise being edited
+     * @return form populated with exercise fields and one sentence per line
+     */
     private ExerciseForm createFormFromExercise(Exercise exercise) {
         ExerciseForm form = new ExerciseForm();
 
@@ -245,6 +257,12 @@ public class ExerciseController {
         return form;
     }
 
+    /**
+     * Checks whether an exercise already uses the same grade, unit, and reading number.
+     *
+     * @param form the form value to check
+     * @return true when the grade/unit/reading combination is already in use
+     */
     private boolean duplicateExerciseExists(ExerciseForm form) {
         if (form.getId() == null) {
             return exerciseRepository.existsByGradeAndUnitNumberAndReadingNumber(

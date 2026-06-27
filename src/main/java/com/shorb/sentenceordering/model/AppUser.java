@@ -3,6 +3,9 @@ package com.shorb.sentenceordering.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
+/**
+ * Models an application account used for login and role-based access.
+ */
 @Entity
 public class AppUser {
     public enum Role {

@@ -13,18 +13,38 @@ import java.util.stream.Collectors;
 @Service
 public class ExercisePlayService {
 
+    /**
+     * Creates a shuffled copy of an exercise's sentences for the play screen.
+     *
+     * @param exercise exercise to read sentences from
+     * @return shuffled sentence list
+     */
     public List<ExerciseSentence> shuffledSentences(Exercise exercise) {
         List<ExerciseSentence> shuffledSentences = new ArrayList<>(exercise.getSentences());
         Collections.shuffle(shuffledSentences);
         return shuffledSentences;
     }
 
+    /**
+     * Wraps sentences for display before the user has submitted an answer.
+     *
+     * @param sentences sentences currently shown to the user
+     * @return display rows without correct/incorrect markings
+     */
     public List<SentenceAnswerFeedback> uncheckedSentenceFeedback(List<ExerciseSentence> sentences) {
         return sentences.stream()
                 .map(sentence -> new SentenceAnswerFeedback(sentence, null))
                 .toList();
     }
 
+    /**
+     * Checks a submitted sentence order against the exercise's correct order.
+     *
+     * @param exercise exercise whose sentences are being checked
+     * @param sentenceIds sentence IDs in the order submitted by the user
+     * @return result containing whether the order is correct and the sentence rows to display
+     * @throws IllegalArgumentException when the submitted IDs do not match the exercise sentences
+     */
     public ExerciseAnswerResult checkAnswer(
             Exercise exercise,
             List<Long> sentenceIds

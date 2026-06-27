@@ -19,6 +19,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    /**
+     * Configures login, logout, and role-based route access.
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(authorize -> authorize
@@ -38,6 +41,9 @@ public class SecurityConfig {
                 .build();
     }
 
+    /**
+     * Loads application users from the database for Spring Security authentication.
+     */
     @Bean
     public UserDetailsService userDetailsService(AppUserRepository appUserRepository) {
         return username -> {
