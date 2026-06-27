@@ -36,20 +36,11 @@ Students log in to view the exercise units available for their grade, with each 
 
 Teachers log in to an admin dashboard where they can add, edit, delete, and preview exercises as well as view and reset student completions for each grade and unit.
 
-<img 
-    src="docs/screenshots/admin-dashboard.png" 
-    alt="Admin dashboard" 
-    width="700">
+<img src="docs/screenshots/admin-dashboard.png" alt="Admin dashboard" width="750">
 
-<img
-    src="docs/screenshots/admin-edit-exercise.png"
-    alt="Edit exercise"
-    width="700">
+<img src="docs/screenshots/admin-edit-exercise.png" alt="Edit exercise" width="750">
 
-<img
-    src="docs/screenshots/admin-progress-screen.png"
-    alt="Student progress"
-    width="700">
+<img src="docs/screenshots/admin-progress-screen.png" alt="Student progress" width="750">
 
 ## Features
 
@@ -95,7 +86,7 @@ Then open:
 http://localhost:8081
 ```
 
-Local users need to be created in the database with BCrypt password hashes.
+Local users need to be created in the database with Bcrypt password hashes.
 
 ## Project Structure
 
